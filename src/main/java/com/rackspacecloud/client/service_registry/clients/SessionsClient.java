@@ -58,12 +58,13 @@ public class SessionsClient extends BaseClient {
         String id = Utils.getIdFromLocationHeader(response.getHeader("Location")[0].getValue());
         HeartbeatToken hbt = (HeartbeatToken)response.getBody();
 
-        return  new SessionCreateResponse(this.authClient, new Session(id, heartbeatTimeout, null, metadata), hbt.getToken());
+        return new SessionCreateResponse(this.authClient, new Session(id, heartbeatTimeout, null, metadata), hbt.getToken());
     }
 
-    public void update(String id, int heartbeatTimeout, HashMap<String, String> metadata) throws Exception {
+    public SessionsClient update(String id, int heartbeatTimeout, HashMap<String, String> metadata) throws Exception {
         Session session = new Session(null, heartbeatTimeout, null, metadata);
         ClientResponse response = this.performRequestWithPayload("/sessions/" + id, null, new HttpPut(), session, true, null);
+        return this;
     }
 
     public String heartbeat(String id, String token) throws Exception {

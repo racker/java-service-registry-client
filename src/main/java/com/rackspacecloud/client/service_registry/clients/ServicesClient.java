@@ -66,15 +66,15 @@ public class ServicesClient extends BaseClient {
         return new Service(id, sessionId, tags, metadata);
     }
 
-    public boolean update(String id, ArrayList<String> tags, HashMap<String, String> metadata) throws Exception {
+    public ServicesClient update(String id, ArrayList<String> tags, HashMap<String, String> metadata) throws Exception {
         Service service = new Service(null, null, tags, metadata);
 
         ClientResponse response = this.performRequestWithPayload("/services/" + id, null, new HttpPut(), service, true, null);
-        return true;
+        return this;
     }
 
-    public boolean delete(String id) throws Exception {
+    public ServicesClient delete(String id) throws Exception {
         ClientResponse response = this.performRequest("/services/" + id, null, new HttpDelete());
-        return true;
+        return this;
     }
 }

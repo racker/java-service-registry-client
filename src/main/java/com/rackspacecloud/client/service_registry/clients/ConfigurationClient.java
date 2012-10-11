@@ -54,8 +54,9 @@ public class ConfigurationClient extends BaseClient {
         return (ConfigurationValue)response.getBody();
     }
 
-    public void set(String id, String value) throws Exception {
+    public ConfigurationClient set(String id, String value) throws Exception {
         ConfigurationValue cv = new ConfigurationValue(null, value);
         this.performRequestWithPayload("/configuration/"+ id, null, new HttpPut(), cv, false, null);
+        return this;
     }
 }
