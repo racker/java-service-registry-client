@@ -9,8 +9,8 @@
         <version>7</version>
     </parent>
 
-    <name>java-service-registry-client</name>
-    <artifactId>java-service-registry-client</artifactId>
+    <name>service-registry-client</name>
+    <artifactId>service-registry-client</artifactId>
     <groupId>com.rackspacecloud</groupId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
