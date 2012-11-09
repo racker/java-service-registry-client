@@ -19,16 +19,16 @@ package com.rackspacecloud.client.service_registry.objects;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class Session  {
     private String id;
     private Integer lastSeen = null;
     @SerializedName("heartbeat_timeout")
     private Integer heartbeatTimeout;
-    private HashMap<String, String> metadata = new HashMap<String, String>();
+    private Map<String, String> metadata;
 
-    public Session(String id, Integer heartbeatTimeout, Integer lastSeen, HashMap<String, String> metadata) {
+    public Session(String id, Integer heartbeatTimeout, Integer lastSeen, Map<String, String> metadata) {
         this.id = id;
         this.heartbeatTimeout = heartbeatTimeout;
         this.lastSeen = lastSeen;
@@ -47,7 +47,7 @@ public class Session  {
         return heartbeatTimeout;
     }
 
-    public HashMap<String, String> getMetadata() {
+    public Map<String, String> getMetadata() {
         return metadata;
     }
 }
