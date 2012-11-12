@@ -30,14 +30,14 @@ import org.apache.http.client.methods.HttpPut;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 public class SessionsClient extends BaseClient {
     public SessionsClient(AuthClient authClient) {
         super(authClient);
     }
 
-    public ArrayList<Session> list(HashMap<String, String> options) throws Exception {
+    public ArrayList<Session> list(Map<String, String> options) throws Exception {
         Type type = new TypeToken<SessionsContainer>() {}.getType();
         ClientResponse response = this.performRequest("/sessions", null, new HttpGet(), true, type);
 
@@ -47,11 +47,10 @@ public class SessionsClient extends BaseClient {
 
     public Session get(String id) throws Exception {
         ClientResponse response = this.performRequest("/sessions/" + id, null, new HttpGet(), true, Session.class);
-
         return (Session)response.getBody();
     }
 
-    public SessionCreateResponse create(int heartbeatTimeout, HashMap<String, String> metadata) throws Exception {
+    public SessionCreateResponse create(int heartbeatTimeout, Map<String, String> metadata) throws Exception {
         Session session = new Session(null, heartbeatTimeout, null, metadata);
         ClientResponse response = this.performRequestWithPayload("/sessions", null, new HttpPost(), session, true, HeartbeatToken.class);
 
@@ -61,7 +60,7 @@ public class SessionsClient extends BaseClient {
         return new SessionCreateResponse(this.authClient, new Session(id, heartbeatTimeout, null, metadata), hbt.getToken());
     }
 
-    public SessionsClient update(String id, int heartbeatTimeout, HashMap<String, String> metadata) throws Exception {
+    public SessionsClient update(String id, int heartbeatTimeout, Map<String, String> metadata) throws Exception {
         Session session = new Session(null, heartbeatTimeout, null, metadata);
         ClientResponse response = this.performRequestWithPayload("/sessions/" + id, null, new HttpPut(), session, true, null);
         return this;
@@ -70,7 +69,6 @@ public class SessionsClient extends BaseClient {
     public String heartbeat(String id, String token) throws Exception {
         HeartbeatToken ht = new HeartbeatToken(token);
         ClientResponse response = this.performRequestWithPayload("/sessions/" + id + "/heartbeat", null, new HttpPost(), ht, true, HeartbeatToken.class);
-
         return ((HeartbeatToken)response.getBody()).getToken();
     }
 }

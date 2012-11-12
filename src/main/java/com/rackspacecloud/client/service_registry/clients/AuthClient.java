@@ -18,6 +18,7 @@
 package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.Gson;
+import com.rackspacecloud.client.service_registry.Region;
 import com.rackspacecloud.client.service_registry.auth.AuthData;
 import com.rackspacecloud.client.service_registry.auth.Token;
 import org.apache.http.HttpEntity;
@@ -35,15 +36,15 @@ public class AuthClient {
     private String username;
     private String apiKey;
 
-    private String region = "us";
+    private String region;
     private String authUrl;
     private HttpClient client;
 
     public Token authToken = null;
 
     private static final HashMap<String, String> DEFAULT_AUTH_URLS  = new HashMap<String, String>() {{
-        put("us", "https://identity.api.rackspacecloud.com/v2.0");
-        put("uk", "https://lon.identity.api.rackspacecloud.com/v2.0");
+        put(Region.US, "https://identity.api.rackspacecloud.com/v2.0");
+        put(Region.UK, "https://lon.identity.api.rackspacecloud.com/v2.0");
     }};
 
     private static Logger logger = Logger.getLogger(AuthClient.class);
@@ -56,6 +57,7 @@ public class AuthClient {
         this.client = client;
         this.username = username;
         this.apiKey = apiKey;
+        this.region = region; // todo: validate region.
 
         if (authUrl != null) {
             this.authUrl = authUrl;

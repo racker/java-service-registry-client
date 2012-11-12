@@ -29,11 +29,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 public class Client {
-    public SessionsClient sessions;
-    public ServicesClient services;
-    public ConfigurationClient configuration;
-    public ViewsClient views;
-    public AccountClient account;
+    public final SessionsClient sessions;
+    public final ServicesClient services;
+    public final ConfigurationClient configuration;
+    public final ViewsClient views;
+    public final AccountClient account;
 
     public Client(String username, String apiKey, String region) {
         AuthClient authClient = new AuthClient(new DefaultHttpClient() {
