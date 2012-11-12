@@ -73,7 +73,7 @@
         <defaultGoal>install</defaultGoal>
         <resources>
             <resource>
-                <directory>src/main/java/com/rackspacecloud/client/service_registry/</directory>
+                <directory>src/main/java/com/rackspacecloud/service_registry/client/</directory>
                 <targetPath>com/rackspacecloud/client/service_registry/</targetPath>
             </resource>
         </resources>
