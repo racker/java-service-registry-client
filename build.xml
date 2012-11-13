@@ -1,0 +1,55 @@
+<project basedir="." default="init" name="ele-java">
+    <property name="src.dir" value="${basedir}/src/main/java" />
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="class.dir" value="${build.dir}/classes" />
+    <property name="tests.dir" value="${basedir}/src/ant-test/java" />
+    
+    <path id="test.classpath">
+        <path path="${java.class.path}" />
+        <pathelement location="${class.dir}" />
+        <!-- borrow junit from parent project. :) -->
+        <pathelement location="${basedir}/lib/junit-4.10.jar" />
+    </path>
+    
+    <target name="init">
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${class.dir}" />
+        <mkdir dir="${tests.dir}" />
+    </target>
+    
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+    
+    <target name="compile" depends="init">
+        <javac destdir="${class.dir}" includeantruntime="false" debug="true" debuglevel="source,lines,vars" includes="com/rackspacecloud/client/service_registry/tools/**/*.java    ">
+            <src path="${src.dir}" />
+            <classpath path="${java.class.path}" />
+        </javac>
+    </target>
+    
+    <target name="test" depends="compile">
+        <javac destdir="${class.dir}" includeantruntime="false" debug="true" debuglevel="source,lines,vars">
+            <src path="${tests.dir}" />
+            <classpath refid="test.classpath" />
+        </javac>
+        <junit haltonerror="true" haltonfailure="true">
+            <jvmarg value="-ea" />
+            <formatter type="brief" usefile="false" />
+            <classpath refid="test.classpath" />
+            <batchtest fork="yes">
+                <fileset dir="${tests.dir}" includes="**/*Test*.java" />
+            </batchtest>
+        </junit>
+    </target>
+    
+    <target name="run" depends="compile">
+        <copy todir="${class.dir}">
+            <fileset dir="${src.dir}/../resources" />
+        </copy>
+        <java classname="com.rackspacecloud.client.service_registry.tools.Generator" fork="true">
+            <classpath refid="test.classpath" />
+            <arg value="${src.dir}/com/rackspacecloud/client/service_registry/examples" />
+        </java>
+    </target>
+</project>
