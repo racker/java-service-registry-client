@@ -18,14 +18,15 @@
 package com.rackspacecloud.client.service_registry.objects;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Event {
     private String id;
     private Integer timestamp;
     private String type;
-    private HashMap<String, String> payload = new HashMap<String, String>();
+    private Map<String, String> payload = new HashMap<String, String>();
 
-    public Event(String id, Integer timestamp, String type, HashMap<String, String> payload) {
+    public Event(String id, Integer timestamp, String type, Map<String, String> payload) {
         this.id = id;
         this.timestamp = timestamp;
         this.type = type;
