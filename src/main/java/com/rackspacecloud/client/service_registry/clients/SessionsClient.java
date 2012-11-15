@@ -30,6 +30,7 @@ import org.apache.http.client.methods.HttpPut;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class SessionsClient extends BaseClient {
@@ -37,12 +38,12 @@ public class SessionsClient extends BaseClient {
         super(authClient);
     }
 
-    public ArrayList<Session> list(Map<String, String> options) throws Exception {
+    public List<Session> list(Map<String, String> options) throws Exception {
         Type type = new TypeToken<SessionsContainer>() {}.getType();
         ClientResponse response = this.performRequest("/sessions", null, new HttpGet(), true, type);
 
         SessionsContainer container = (SessionsContainer)response.getBody();
-        return (ArrayList<Session>)container.getValues();
+        return container.getValues();
     }
 
     public Session get(String id) throws Exception {

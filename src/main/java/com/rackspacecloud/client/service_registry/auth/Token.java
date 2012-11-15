@@ -21,11 +21,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Token {
     protected String id;
     protected String expires;
-    protected HashMap<String, Integer> tenant;
+    protected Map<String, Integer> tenant;
 
     public String getId() {
         return id;
@@ -45,7 +46,7 @@ public class Token {
         return date.getTime();
     }
 
-    public HashMap<String, Integer> getTenant() {
+    public Map<String, Integer> getTenant() {
         return tenant;
     }
 }
