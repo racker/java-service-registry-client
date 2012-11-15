@@ -17,22 +17,22 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class Limits {
-    private HashMap<String, Object> resource;
-    private HashMap<String, HashMap<String, Object>> rate;
+    private Map<String, Object> resource;
+    private Map<String, Map<String, Object>> rate;
 
-    public Limits(HashMap<String, Object> resource, HashMap<String, HashMap<String, Object>> rate) {
+    public Limits(Map<String, Object> resource, Map<String, Map<String, Object>> rate) {
         this.resource = resource;
         this.rate = rate;
     }
 
-    public HashMap<String, Object> getResource() {
+    public Map<String, Object> getResource() {
         return resource;
     }
 
-    public HashMap<String, HashMap<String, Object>> getRate() {
+    public Map<String, Map<String, Object>> getRate() {
         return rate;
     }
 }

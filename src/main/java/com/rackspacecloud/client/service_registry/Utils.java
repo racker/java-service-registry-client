@@ -27,11 +27,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class Utils {
-    public static HashMap<String, Object> parseJson(String json) {
+    public static Map<String, Object> parseJson(String json) {
         JsonObject object = (JsonObject) new JsonParser().parse(json);
         Set<Map.Entry<String, JsonElement>> set = object.entrySet();
         Iterator<Map.Entry<String, JsonElement>> iterator = set.iterator();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
 
         while (iterator.hasNext()) {
             Map.Entry<String, JsonElement> entry = iterator.next();
