@@ -56,8 +56,12 @@ public class HeartBeater extends BaseClient implements Runnable {
     public void run() {
         ClientResponse response;
         String path = String.format("/sessions/%s/heartbeat", this.sessionId);
+        
+        // assume we lost ~2 seconds of a heartbeat before we got here (this number is made up)
+        long timeLeftToSleep = (this.heartbeatTimeout - 2) * 1000;
 
         while (!this.stopped && (this.nextToken != null)) {
+            long start = System.currentTimeMillis();
             logger.debug(String.format("Sending hearbeat (timeout=%d)...", this.heartbeatTimeout));
 
             HeartbeatToken payload = new HeartbeatToken(this.nextToken);
@@ -73,11 +77,13 @@ public class HeartBeater extends BaseClient implements Runnable {
 
             this.nextToken = ((HeartbeatToken)response.getBody()).getToken();
 
-            double interval = this.heartbeatInterval * 1000;
+            // deduct time wasted + 3000ms from the heartbeat. Let's be proactive about this.
+            long timeWasted = System.currentTimeMillis() - start;
+            long interval = timeLeftToSleep - timeWasted - 3000;
 
             try {
                 logger.debug(String.format("Sleeping before sending next heartbeat (delay=%sms, nextToken=%s)", interval, this.nextToken));
-                java.lang.Thread.sleep((long) interval);
+                java.lang.Thread.sleep(interval);
             }
             catch (InterruptedException ex) {
                 logger.error("Error while sleeping", ex);
