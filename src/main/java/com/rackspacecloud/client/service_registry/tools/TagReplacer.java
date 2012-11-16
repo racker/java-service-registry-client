@@ -2,6 +2,7 @@ package com.rackspacecloud.client.service_registry.tools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -29,11 +30,13 @@ public class TagReplacer {
             System.out.println("Finished scan " + java.getAbsolutePath());
         }
         
+        BufferedWriter writer = null;
+        BufferedReader reader = null;
         for (File markup : markupSources.keySet()) {
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(markup));
+                reader = new BufferedReader(new FileReader(markup));
                 File tmp = File.createTempFile(markup.getName(), ".rsr_replace.txt");
-                BufferedWriter writer = new BufferedWriter(new FileWriter(tmp));
+                writer = new BufferedWriter(new FileWriter(tmp));
                 for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                     String tag = CodeExtractor.getTag(line.trim());
                     String source = extractor.getSource(tag);
@@ -72,6 +75,17 @@ public class TagReplacer {
                 tmp.renameTo(dstFile);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
+            } finally {
+                for (Closeable closeme : new Closeable[] {writer, reader}) {
+                    if (closeme != null) {
+                        try {
+                            closeme.close();
+                        } catch (IOException fuuuuu) {
+                            // no sense in dying. No sense in complaining. But we must do something.
+                            fuuuuu.printStackTrace(System.err);
+                        }
+                    }
+                }
             }
             
         }
