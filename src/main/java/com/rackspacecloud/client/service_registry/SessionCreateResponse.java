@@ -21,16 +21,14 @@ import com.rackspacecloud.client.service_registry.clients.AuthClient;
 import com.rackspacecloud.client.service_registry.objects.Session;
 
 public class SessionCreateResponse {
-    protected Session session;
-    protected String token;
-    protected volatile Thread heartbeater;
+    private final Session session;
+    private final String token;
+    private final HeartBeater heartbeater;
 
     public SessionCreateResponse(AuthClient authClient, Session session, String token) {
         this.session = session;
         this.token = token;
-
-        HeartBeater hb = new HeartBeater(authClient, this.session.getId(), this.getToken(), this.session.getHeartbeatTimeout());
-        this.heartbeater = new Thread(hb);
+        this.heartbeater = new HeartBeater(authClient, this.session.getId(), this.getToken(), this.session.getHeartbeatTimeout());
     }
 
     public Session getSession() {
@@ -41,7 +39,7 @@ public class SessionCreateResponse {
         return token;
     }
 
-    public Thread getHeartbeater() {
+    public HeartBeater getHeartbeater() {
         return heartbeater;
     }
 }
