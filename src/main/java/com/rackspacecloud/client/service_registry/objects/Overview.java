@@ -17,9 +17,9 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Overview {
     private Session session;
-    private ArrayList<Service> services;
+    private List<Service> services;
 }

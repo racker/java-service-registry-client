@@ -21,15 +21,17 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Service {
     private String id;
     @SerializedName("session_id")
     private String sessionId;
-    private ArrayList<String> tags = new ArrayList<String>();
-    private HashMap<String, String> metadata = new HashMap<String, String>();
+    private List<String> tags = new ArrayList<String>();
+    private Map<String, String> metadata = new HashMap<String, String>();
 
-    public Service(String id, String sessionId, ArrayList<String> tags, HashMap<String, String> metadata) {
+    public Service(String id, String sessionId, List<String> tags, Map<String, String> metadata) {
         this.id = id;
         this.sessionId = sessionId;
         this.tags = tags;
@@ -44,11 +46,11 @@ public class Service {
         return sessionId;
     }
 
-    public ArrayList<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public HashMap<String, String> getMetadata() {
+    public Map<String, String> getMetadata() {
         return metadata;
     }
 }

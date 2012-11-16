@@ -33,13 +33,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ServicesClient extends BaseClient {
     public ServicesClient(AuthClient authClient) {
         super(authClient);
     }
 
-    public ArrayList<Service> list(HashMap<String, String> options, String tag) throws Exception {
+    public List<Service> list(Map<String, String> options, String tag) throws Exception {
         Type type = new TypeToken<ServicesContainer>() {}.getType();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
@@ -50,7 +51,7 @@ public class ServicesClient extends BaseClient {
         ClientResponse response = this.performRequest("/services", params, new HttpGet(), true, type);
 
         ServicesContainer container = (ServicesContainer)response.getBody();
-        return (ArrayList<Service>)container.getValues();
+        return container.getValues();
     }
 
     public Service get(String id) throws Exception {
@@ -59,14 +60,14 @@ public class ServicesClient extends BaseClient {
         return (Service)response.getBody();
     }
 
-    public Service create(String id, String sessionId, ArrayList<String> tags, HashMap<String, String> metadata) throws Exception {
+    public Service create(String id, String sessionId, List<String> tags, Map<String, String> metadata) throws Exception {
         Service service = new Service(id, sessionId, tags, metadata);
         ClientResponse response = this.performRequestWithPayload("/services", null, new HttpPost(), service, false, null);
 
         return new Service(id, sessionId, tags, metadata);
     }
 
-    public ServicesClient update(String id, ArrayList<String> tags, HashMap<String, String> metadata) throws Exception {
+    public ServicesClient update(String id, List<String> tags, Map<String, String> metadata) throws Exception {
         Service service = new Service(null, null, tags, metadata);
 
         ClientResponse response = this.performRequestWithPayload("/services/" + id, null, new HttpPut(), service, true, null);

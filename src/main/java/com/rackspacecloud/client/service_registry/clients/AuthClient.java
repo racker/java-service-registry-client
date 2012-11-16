@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AuthClient {
     private String username;
@@ -42,7 +43,7 @@ public class AuthClient {
 
     public Token authToken = null;
 
-    private static final HashMap<String, String> DEFAULT_AUTH_URLS  = new HashMap<String, String>() {{
+    private static final Map<String, String> DEFAULT_AUTH_URLS  = new HashMap<String, String>() {{
         put(Region.US, "https://identity.api.rackspacecloud.com/v2.0");
         put(Region.UK, "https://lon.identity.api.rackspacecloud.com/v2.0");
     }};
