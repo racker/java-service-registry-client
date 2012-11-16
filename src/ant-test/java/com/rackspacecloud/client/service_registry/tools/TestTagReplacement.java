@@ -18,11 +18,6 @@ import java.util.Map;
 public class TestTagReplacement {
     
     @Test
-    public void testCwd() {
-        System.err.println(new java.io.File(".").getAbsolutePath());
-    }
-    
-    @Test
     public void testIt() throws IOException {
         final File markdown = File.createTempFile("markdown_copy", ".rsr_source.txt");
         copyFile(new File("src/ant-test/resources/test.md"), markdown);

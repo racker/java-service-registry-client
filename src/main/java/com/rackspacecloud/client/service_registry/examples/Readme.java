@@ -16,7 +16,7 @@ public class Readme {
         
         Map<String, String> metadata = new HashMap<String, String>();
         metadata.put("host", "127.0.0.1");
-        metadata.put("testdata?", "absolutely");
+        metadata.put("is_testdata", "absolutely");
         metadata.put("version", "0u812");
     
         SessionCreateResponse sessionResponse = client.sessions.create(15, metadata);

@@ -17,6 +17,7 @@ public class TestCodeExtraction {
             throw new RuntimeException("Missing " + source.getAbsolutePath());
         extractor.extractTaggedMethods(source);
     }
+    
     @Example(tag="extract_1")
     public void method1() {
         String s = "tag_is_extract_1";
