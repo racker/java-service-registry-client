@@ -32,20 +32,21 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ConfigurationClient extends BaseClient {
     public ConfigurationClient(AuthClient authClient) {
         super(authClient);
     }
 
-    public ArrayList<ConfigurationValue> list(HashMap<String, String> options) throws Exception {
+    public List<ConfigurationValue> list(Map<String, String> options) throws Exception {
         Type type = new TypeToken<ConfigurationValuesContainer>() {}.getType();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
         ClientResponse response = this.performRequest("/configuration", params, new HttpGet(), true, type);
 
         ConfigurationValuesContainer container = (ConfigurationValuesContainer)response.getBody();
-        return (ArrayList<ConfigurationValue>)container.getValues();
+        return container.getValues();
     }
 
     public ConfigurationValue get(String id) throws Exception {

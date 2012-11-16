@@ -24,19 +24,19 @@ import com.rackspacecloud.client.service_registry.objects.Overview;
 import org.apache.http.client.methods.HttpGet;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ViewsClient extends BaseClient {
     public ViewsClient(AuthClient authClient) {
         super(authClient);
     }
 
-    public ArrayList<Overview> getOverview(HashMap<String, String> options) throws Exception {
+    public List<Overview> getOverview(Map<String, String> options) throws Exception {
         Type type = new TypeToken<OverviewContainer>() {}.getType();
         ClientResponse response = this.performRequest("/views/overview", null, new HttpGet(), true, type);
 
         OverviewContainer container = (OverviewContainer)response.getBody();
-        return (ArrayList<Overview>)container.getValues();
+        return container.getValues();
     }
 }

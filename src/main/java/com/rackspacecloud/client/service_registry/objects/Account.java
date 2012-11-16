@@ -18,12 +18,13 @@
 package com.rackspacecloud.client.service_registry.objects;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Account {
     private String id;
-    private HashMap<String, String> metadata = new HashMap<String, String>();
+    private Map<String, String> metadata = new HashMap<String, String>();
 
-    public Account(String id, HashMap<String, String> metadata) {
+    public Account(String id, Map<String, String> metadata) {
         this.id = id;
         this.metadata = metadata;
     }
