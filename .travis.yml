@@ -6,3 +6,7 @@ jdk:
   - openjdk7
 
 script: mvn install
+
+notifications:
+  email:
+    - farscape-build-notifications@lists.rackspace.com
