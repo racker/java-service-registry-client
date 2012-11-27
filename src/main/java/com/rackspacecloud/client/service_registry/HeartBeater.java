@@ -26,43 +26,35 @@ import org.apache.log4j.Logger;
 import java.lang.Exception;
 import java.lang.Integer;
 import java.lang.InterruptedException;
-import java.lang.Runnable;
 import java.lang.String;
 
-public class HeartBeater extends BaseClient implements Runnable {
-    private String sessionId;
-    private Integer heartbeatTimeout;
-    private double heartbeatInterval;
+public class HeartBeater extends BaseClient {
+    private static final long INTERVAL_PROACTIVE_MILLIS = 4000L;
+    
+    private final String sessionId;
+    private final Integer heartbeatTimeoutSecs;
+    private final long heartbeatIntervalMillis;
     private String nextToken;
     private boolean stopped = false;
+    private volatile Thread hbThread = null;
+    
+    private static final Logger logger = Logger.getLogger(HeartBeater.class);
 
-    private static Logger logger = Logger.getLogger(HeartBeater.class);
-
-    public HeartBeater(AuthClient authClient, String sessionId, String initialToken, Integer timeout) {
+    public HeartBeater(AuthClient authClient, String sessionId, String initialToken, int timeout) {
         super(authClient);
-
         this.sessionId = sessionId;
         this.nextToken = initialToken;
-        this.heartbeatTimeout = timeout;
-
-        if (this.heartbeatTimeout < 15) {
-            this.heartbeatInterval = (this.heartbeatTimeout * 0.6);
-        }
-        else {
-            this.heartbeatInterval = (this.heartbeatTimeout * 0.9);
-        }
+        this.heartbeatTimeoutSecs = timeout;
+        this.heartbeatIntervalMillis = (long)(timeout * 1000L * (timeout < 15 ? 0.6d : 0.9d));
     }
 
-    public void run() {
+    private void runInThread() {
         ClientResponse response;
         String path = String.format("/sessions/%s/heartbeat", this.sessionId);
-        
-        // assume we lost ~2 seconds of a heartbeat before we got here (this number is made up)
-        long timeLeftToSleep = (this.heartbeatTimeout - 2) * 1000;
 
         while (!this.stopped && (this.nextToken != null)) {
             long start = System.currentTimeMillis();
-            logger.debug(String.format("Sending hearbeat (timeout=%d)...", this.heartbeatTimeout));
+            logger.debug(String.format("Sending hearbeat (timeout=%d secs)...", this.heartbeatTimeoutSecs));
 
             HeartbeatToken payload = new HeartbeatToken(this.nextToken);
 
@@ -72,26 +64,40 @@ public class HeartBeater extends BaseClient implements Runnable {
             catch (Exception ex) {
                 logger.error(String.format("Got exception while sending heartbeat, stopping heartbeating..."), ex);
                 this.stopped = true;
-                return;
+                break;
             }
 
             this.nextToken = ((HeartbeatToken)response.getBody()).getToken();
 
-            // deduct time wasted + 3000ms from the heartbeat. Let's be proactive about this.
-            long timeWasted = System.currentTimeMillis() - start;
-            long interval = timeLeftToSleep - timeWasted - 3000;
+            // actual sleep interval is interval - time wasted - INTERVAL_PROACTIVE_MILLIS
+            long actualInterval = heartbeatIntervalMillis - System.currentTimeMillis() + start - INTERVAL_PROACTIVE_MILLIS;
 
             try {
-                logger.debug(String.format("Sleeping before sending next heartbeat (delay=%sms, nextToken=%s)", interval, this.nextToken));
-                java.lang.Thread.sleep(interval);
+                logger.debug(String.format("Sleeping before sending next heartbeat (delay=%sms, nextToken=%s)", actualInterval, this.nextToken));
+                hbThread.sleep(actualInterval);
             }
             catch (InterruptedException ex) {
-                logger.error("Error while sleeping", ex);
+                logger.debug("Heartbeater woken up. Stopping?");
+                continue;
             }
+        }
+        hbThread = null; // reset sentinel for start().
+    }
+    
+    public synchronized void start() {
+        if (hbThread == null) {
+            stopped = false;
+            hbThread = new Thread(this.toString()) {
+                public void run() {
+                    runInThread();
+                }
+            };
+            hbThread.start();
         }
     }
 
-    public void stop() {
+    public synchronized  void stop() {
         this.stopped = true;
+        hbThread.interrupt();
     }
 }
