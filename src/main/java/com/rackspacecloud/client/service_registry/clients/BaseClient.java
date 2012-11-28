@@ -94,7 +94,7 @@ public abstract class BaseClient {
     protected ClientResponse performRequest(String path, List<NameValuePair> params, HttpRequestBase method, boolean parseAsJson, Type responseType, boolean reAuthenticate, int retryCount) throws Exception {
         int statusCode;
 
-        this.authClient.refereshToken();
+        this.authClient.refreshToken(reAuthenticate);
 
         String url = (this.url + "/" + this.authClient.authToken.getTenant().get("id") + path);
 
@@ -125,7 +125,7 @@ public abstract class BaseClient {
         String body;
         int statusCode;
 
-        this.authClient.refereshToken();
+        this.authClient.refreshToken(reAuthenticate);
 
         method.setURI(new URI(this.url + "/" + this.authClient.authToken.getTenant().get("id") + path));
         method.setHeader("X-Auth-Token", this.authClient.authToken.getId());

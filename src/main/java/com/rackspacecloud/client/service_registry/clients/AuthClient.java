@@ -72,11 +72,11 @@ public class AuthClient {
         }
     }
 
-    public synchronized void refereshToken() throws Exception {
-        this.refereshToken(false);
+    public synchronized void refreshToken() throws Exception {
+        this.refreshToken(false);
     }
 
-    public synchronized void refereshToken(boolean force) throws Exception {
+    public synchronized void refreshToken(boolean force) throws Exception {
         Long now = new Date().getTime();
 
         if (force || (this.authToken == null || (this.authToken.getExpires() <= now))) {
