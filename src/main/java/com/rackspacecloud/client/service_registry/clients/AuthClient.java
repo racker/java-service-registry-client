@@ -18,6 +18,7 @@
 package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.Gson;
+import com.rackspacecloud.client.service_registry.Client;
 import com.rackspacecloud.client.service_registry.Region;
 import com.rackspacecloud.client.service_registry.auth.AuthData;
 import com.rackspacecloud.client.service_registry.auth.Token;
@@ -91,6 +92,7 @@ public class AuthClient {
         String payload = "{\"auth\": {\"RAX-KSKEY:apiKeyCredentials\": {\"username\":  \"" + this.username + "\", \"apiKey\": \"" + this.apiKey + "\"}}}";
         StringEntity payloadEntity = new StringEntity(payload);
         payloadEntity.setContentType("application/json");
+        method.setHeader("User-Agent", Client.VERSION);
         method.setEntity(payloadEntity);
 
         logger.debug(String.format("Authenticating against auth API server: authUrl=%s, username=%s, apiKey=%s",
