@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.rackspacecloud.client.service_registry.Client;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -103,6 +104,7 @@ public abstract class BaseClient {
         }
 
         method.setURI(new URI(url));
+        method.setHeader("User-Agent", Client.VERSION);
         method.setHeader("X-Auth-Token", this.authClient.authToken.getId());
 
         HttpResponse response = this.client.execute(method);
@@ -128,6 +130,7 @@ public abstract class BaseClient {
         this.authClient.refreshToken(reAuthenticate);
 
         method.setURI(new URI(this.url + "/" + this.authClient.authToken.getTenant().get("id") + path));
+        method.setHeader("User-Agent", Client.VERSION);
         method.setHeader("X-Auth-Token", this.authClient.authToken.getId());
 
         Gson gson = new GsonBuilder()
