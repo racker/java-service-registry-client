@@ -35,6 +35,8 @@ public class Client {
     public final ViewsClient views;
     public final AccountClient account;
 
+    public static final String VERSION = "java-service-registry-client/v1.0.0-SNAPSHOT";
+
     public Client(String username, String apiKey, String region) {
         AuthClient authClient = new AuthClient(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
