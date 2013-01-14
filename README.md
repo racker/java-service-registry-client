@@ -10,7 +10,17 @@ Java client for Rackspace Service Registry.
 
 ### Installing the library using Maven
 
-Add the following lines in the `dependencies` section in your `pom.xml`.
+Add the following lines in the `repositories` and `dependencies` section in your `pom.xml`.
+
+```xml
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Nexus Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+```
+
+This lines are necessary because artifacts are currently only stored on Sonatype staging Maven servers.
 
 ```xml
         <dependency>
