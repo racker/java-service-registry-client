@@ -8,6 +8,20 @@ Java client for Rackspace Service Registry.
 
 ## Using the client
 
+### Installing the library using Maven
+
+Add the following lines in the `dependencies` section in your `pom.xml`.
+
+```xml
+        <dependency>
+            <groupId>com.rackspacecloud</groupId>
+            <artifactId>service-registry-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+```
+
+Replace `1.0.0-SNAPSHOT` with the desired version.
+
 ### Registration and Heartbeat
 
 ```java
