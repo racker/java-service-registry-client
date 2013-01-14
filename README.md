@@ -20,6 +20,17 @@ Add the following lines in the `repositories` and `dependencies` section in your
         </repository>
 ```
 
+If you're using ivy, this needs to be in your ivysettings.xml:
+
+```xml
+    <ibiblio name="sonatype" 
+             m2compatible="true" 
+             usepoms="true"
+             root="https://oss.sonatype.org/content/repositories/snapshots/"
+             pattern="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+             changingPattern="SNAPSHOT*"/> 
+```
+
 This lines are necessary because artifacts are currently only stored on Sonatype staging Maven servers.
 
 ```xml
