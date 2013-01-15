@@ -77,7 +77,7 @@ public class ClientResponse {
         return this.response.getHeaders(name);
     }
     
-    public int getStatus() {
+    public int getStatusCode() {
         return this.response.getStatusLine().getStatusCode();
     }
     

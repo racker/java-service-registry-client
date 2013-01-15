@@ -22,11 +22,9 @@ import com.rackspacecloud.client.service_registry.clients.BaseClient;
 import com.rackspacecloud.client.service_registry.events.HeartbeatAckEvent;
 import com.rackspacecloud.client.service_registry.events.HeartbeatStoppedEvent;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
-import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.lang.Exception;
 import java.lang.Integer;
 import java.lang.InterruptedException;
@@ -65,7 +63,7 @@ public class HeartBeater extends BaseClient {
 
             try {
                 response = this.performRequestWithPayload(path, null, new HttpPost(), payload, true, HeartbeatToken.class);
-                lastHttpStatus = response.getStatus();
+                lastHttpStatus = response.getStatusCode();
                 this.nextToken = ((HeartbeatToken)response.getBody()).getToken();
                 if (lastHttpStatus != 200)
                     // heartbeat again instantly or exit out of the loop because a 404 will yield a null token.
