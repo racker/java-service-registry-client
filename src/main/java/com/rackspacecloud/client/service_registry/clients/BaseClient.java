@@ -23,12 +23,20 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EventListener;
+import java.util.EventObject;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rackspacecloud.client.service_registry.Client;
 import com.rackspacecloud.client.service_registry.ClientResponse;
+import com.rackspacecloud.client.service_registry.events.ClientEvent;
+import com.rackspacecloud.client.service_registry.events.ClientEventListener;
+import com.rackspacecloud.client.service_registry.events.ClientEventThread;
+import com.rackspacecloud.client.service_registry.events.HeartbeatEventListener;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -48,6 +56,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.log4j.Logger;
 
 public abstract class BaseClient {
+    private static Logger logger = Logger.getLogger(BaseClient.class);
     private static final String DEFAULT_URL = "https://dfw.registry.api.rackspacecloud.com/v1.0";
     private static final int MAX_401_RETRIES = 1;
 
@@ -55,9 +64,8 @@ public abstract class BaseClient {
 
     protected AuthClient authClient = null;
     private HttpClient client = null;
-    private static Logger logger = Logger.getLogger(BaseClient.class);
-
-    public BaseClient() {}
+    
+    private Collection<ClientEventListener> listeners;
 
     public BaseClient(AuthClient authClient) {
         this(new DefaultHttpClient() {
@@ -83,7 +91,35 @@ public abstract class BaseClient {
     public BaseClient(HttpClient client, AuthClient authClient) throws IllegalArgumentException {
         this.client = client;
         this.authClient = authClient;
+        listeners = new ArrayList<ClientEventListener>();
     }
+    
+    public void addEventListener(ClientEventListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+    
+    public void removeEventListener(ClientEventListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
+    }
+    
+    public void emit(final ClientEvent event) {
+        synchronized (listeners) {
+            for (ClientEventListener _el : listeners) {
+                final ClientEventListener el = _el;
+                // todo: could generate less runnables if we first check to see if el can handle event.
+                ClientEventThread.submit(new Runnable() {
+                    public void run() {
+                        el.onEvent(event);
+                    }
+                });
+            }
+        }
+    }
+    
     protected ClientResponse performRequest(String path, List<NameValuePair> params, HttpRequestBase method) throws Exception {
         return performRequest(path, params, method, false, null, false, 0);
     }
