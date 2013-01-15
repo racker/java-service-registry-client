@@ -7,7 +7,7 @@ public class HeartbeatAckEvent extends ClientEvent {
     private final ClientResponse response;
     
     public HeartbeatAckEvent(HeartBeater hb, ClientResponse response) {
-        super(hb);
+        super(hb, response.getStatus());
         this.response = response;
     }
     

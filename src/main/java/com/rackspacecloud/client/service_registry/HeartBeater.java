@@ -55,6 +55,7 @@ public class HeartBeater extends BaseClient {
     private void runInThread() {
         ClientResponse response;
         String path = String.format("/sessions/%s/heartbeat", this.sessionId);
+        int lastHttpStatus = 0;
 
         while (!this.stopped && (this.nextToken != null)) {
             long start = System.currentTimeMillis();
@@ -64,20 +65,23 @@ public class HeartBeater extends BaseClient {
 
             try {
                 response = this.performRequestWithPayload(path, null, new HttpPost(), payload, true, HeartbeatToken.class);
-                this.emit(new HeartbeatAckEvent(this, response));
+                lastHttpStatus = response.getStatus();
+                this.nextToken = ((HeartbeatToken)response.getBody()).getToken();
+                if (lastHttpStatus != 200)
+                    // heartbeat again instantly or exit out of the loop because a 404 will yield a null token.
+                    continue;
             }
             catch (Exception ex) {
                 logger.error(String.format("Got exception while sending heartbeat, stopping heartbeating..."), ex);
                 this.stopped = true;
-                this.emit(new HeartbeatStoppedEvent(this, ex));
+                this.emit(new HeartbeatStoppedEvent(this, ex, lastHttpStatus));
                 break;
             }
-
-            this.nextToken = ((HeartbeatToken)response.getBody()).getToken();
 
             // actual sleep interval is interval - time wasted - INTERVAL_PROACTIVE_MILLIS
             long actualInterval = heartbeatIntervalMillis - System.currentTimeMillis() + start - INTERVAL_PROACTIVE_MILLIS;
 
+            this.emit(new HeartbeatAckEvent(this, response));
             try {
                 logger.debug(String.format("Sleeping before sending next heartbeat (delay=%sms, nextToken=%s)", actualInterval, this.nextToken));
                 hbThread.sleep(actualInterval);
@@ -88,6 +92,7 @@ public class HeartBeater extends BaseClient {
             }
         }
         hbThread = null; // reset sentinel for start().
+        this.emit(new HeartbeatStoppedEvent(this, lastHttpStatus));
     }
     
     public synchronized void start() {

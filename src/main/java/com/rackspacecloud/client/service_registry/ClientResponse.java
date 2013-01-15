@@ -65,7 +65,7 @@ public class ClientResponse {
                 data = new Gson().fromJson(data.toString(), this.responseType);
             }
         }
-
+        
         this.body = data;
     }
 
@@ -75,5 +75,13 @@ public class ClientResponse {
 
     public Header[] getHeader(String name) {
         return this.response.getHeaders(name);
+    }
+    
+    public int getStatus() {
+        return this.response.getStatusLine().getStatusCode();
+    }
+    
+    public String getStatusPhrase() {
+        return this.response.getStatusLine().getReasonPhrase();
     }
 }

@@ -4,7 +4,12 @@ import java.util.EventObject;
 
 public class ClientEvent extends EventObject 
 {
-    public ClientEvent(Object source) {
+    private final int httpStatus;
+    
+    public ClientEvent(Object source, int httpStatus) {
         super(source);
+        this.httpStatus = httpStatus;
     }
+    
+    public int getHttpStatus() { return httpStatus; }
 }
