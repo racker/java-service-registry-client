@@ -19,10 +19,14 @@ package com.rackspacecloud.client.service_registry;
 
 import com.rackspacecloud.client.service_registry.clients.AuthClient;
 import com.rackspacecloud.client.service_registry.clients.BaseClient;
+import com.rackspacecloud.client.service_registry.events.HeartbeatAckEvent;
+import com.rackspacecloud.client.service_registry.events.HeartbeatStoppedEvent;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.lang.Exception;
 import java.lang.Integer;
 import java.lang.InterruptedException;
@@ -60,10 +64,12 @@ public class HeartBeater extends BaseClient {
 
             try {
                 response = this.performRequestWithPayload(path, null, new HttpPost(), payload, true, HeartbeatToken.class);
+                this.emit(new HeartbeatAckEvent(this, response));
             }
             catch (Exception ex) {
                 logger.error(String.format("Got exception while sending heartbeat, stopping heartbeating..."), ex);
                 this.stopped = true;
+                this.emit(new HeartbeatStoppedEvent(this, ex));
                 break;
             }
 
