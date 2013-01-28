@@ -20,6 +20,7 @@ package com.rackspacecloud.client.service_registry;
 import com.rackspacecloud.client.service_registry.clients.AuthClient;
 import com.rackspacecloud.client.service_registry.clients.BaseClient;
 import com.rackspacecloud.client.service_registry.events.HeartbeatAckEvent;
+import com.rackspacecloud.client.service_registry.events.HeartbeatErrorEvent;
 import com.rackspacecloud.client.service_registry.events.HeartbeatStoppedEvent;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
 import org.apache.http.client.methods.HttpPost;
@@ -40,6 +41,7 @@ public class HeartBeater extends BaseClient {
     private boolean stopped = false;
     private volatile Thread hbThread = null;
     
+    // todo: fix busted logging (entire project).
     private static final Logger logger = Logger.getLogger(HeartBeater.class);
 
     public HeartBeater(AuthClient authClient, String sessionId, String initialToken, int timeout) {
@@ -54,7 +56,8 @@ public class HeartBeater extends BaseClient {
         ClientResponse response;
         String path = String.format("/sessions/%s/heartbeat", this.sessionId);
         int lastHttpStatus = 0;
-
+        boolean isError = false;
+        
         while (!this.stopped && (this.nextToken != null)) {
             long start = System.currentTimeMillis();
             logger.debug(String.format("Sending hearbeat (timeout=%d secs)...", this.heartbeatTimeoutSecs));
@@ -72,7 +75,8 @@ public class HeartBeater extends BaseClient {
             catch (Exception ex) {
                 logger.error(String.format("Got exception while sending heartbeat, stopping heartbeating..."), ex);
                 this.stopped = true;
-                this.emit(new HeartbeatStoppedEvent(this, ex, lastHttpStatus));
+                isError = true;
+                this.emit(new HeartbeatErrorEvent(this, ex, lastHttpStatus));
                 break;
             }
 
@@ -90,7 +94,10 @@ public class HeartBeater extends BaseClient {
             }
         }
         hbThread = null; // reset sentinel for start().
-        this.emit(new HeartbeatStoppedEvent(this, lastHttpStatus));
+        
+        if (!isError) {
+            this.emit(new HeartbeatStoppedEvent(this, lastHttpStatus));
+        }
     }
     
     public synchronized void start() {
