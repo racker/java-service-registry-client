@@ -28,7 +28,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class AuthClient {
         put(Region.UK, "https://lon.identity.api.rackspacecloud.com/v2.0");
     }};
 
-    private static Logger logger = Logger.getLogger(AuthClient.class);
+    private static Logger logger = LoggerFactory.getLogger(AuthClient.class);
 
     public AuthClient(HttpClient client, String username, String apiKey, String region) {
         this(client, username, apiKey, region, null);
