@@ -5,6 +5,7 @@ import com.rackspacecloud.client.service_registry.HeartBeater;
 import com.rackspacecloud.client.service_registry.events.ClientEvent;
 import com.rackspacecloud.client.service_registry.events.ClientEventListener;
 import com.rackspacecloud.client.service_registry.events.HeartbeatAckEvent;
+import com.rackspacecloud.client.service_registry.events.HeartbeatErrorEvent;
 import com.rackspacecloud.client.service_registry.events.HeartbeatEventListener;
 import com.rackspacecloud.client.service_registry.events.HeartbeatStoppedEvent;
 import org.apache.http.HttpVersion;
@@ -100,7 +101,7 @@ public class HeartbeatEventTest {
     @Test
     public void test() throws Exception {
         final CountDownLatch genericLatch = new CountDownLatch(5);
-        final CountDownLatch heartbeatLatch = new CountDownLatch(3);
+        final CountDownLatch heartbeatLatch = new CountDownLatch(4);
         final AtomicBoolean tooManyEvents = new AtomicBoolean(false);
         HeartbeatEventListener listener = new HeartbeatEventListener() {
             @Override
@@ -110,6 +111,11 @@ public class HeartbeatEventTest {
 
             @Override
             public void onStopped(HeartbeatStoppedEvent stopped) {
+                ackOrStop();
+            }
+
+            @Override
+            public void onError(HeartbeatErrorEvent error) {
                 ackOrStop();
             }
 
@@ -133,8 +139,9 @@ public class HeartbeatEventTest {
         hbClient.emit(new ClientEvent(hbClient, 201));
         hbClient.emit(new HeartbeatAckEvent(hbClient, ok200));
         hbClient.emit(new HeartbeatAckEvent(hbClient, ok200));
-        hbClient.emit(new HeartbeatStoppedEvent(hbClient, null, 404));
+        hbClient.emit(new HeartbeatStoppedEvent(hbClient, 404));
         hbClient.emit(new ClientEvent(hbClient, 202));
+        hbClient.emit(new HeartbeatErrorEvent(hbClient, new Exception("something bad happened"), 503));
         
         // ok. that's 5 events total, but only 3 HB events. make sure things tally up.
         genericLatch.await(1, TimeUnit.SECONDS);
