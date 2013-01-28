@@ -24,7 +24,8 @@ import com.rackspacecloud.client.service_registry.events.HeartbeatErrorEvent;
 import com.rackspacecloud.client.service_registry.events.HeartbeatStoppedEvent;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.Exception;
 import java.lang.Integer;
@@ -41,8 +42,7 @@ public class HeartBeater extends BaseClient {
     private boolean stopped = false;
     private volatile Thread hbThread = null;
     
-    // todo: fix busted logging (entire project).
-    private static final Logger logger = Logger.getLogger(HeartBeater.class);
+    private static final Logger logger = LoggerFactory.getLogger(HeartBeater.class);
 
     public HeartBeater(AuthClient authClient, String sessionId, String initialToken, int timeout) {
         super(authClient);
