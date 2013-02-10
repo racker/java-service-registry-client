@@ -40,10 +40,27 @@ public class ConfigurationClient extends BaseClient {
     }
 
     public List<ConfigurationValue> list(Map<String, String> options) throws Exception {
+        return list(options, null);
+    }
+
+    public List<ConfigurationValue> list(Map<String, String> options, String namespace) throws Exception {
+        String url = "/configuration";
+
         Type type = new TypeToken<ConfigurationValuesContainer>() {}.getType();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-        ClientResponse response = this.performRequest("/configuration", params, new HttpGet(), true, type);
+        if (namespace != null) {
+            // Make sure leading and trailing forward slashes are present
+            if (namespace.indexOf("/") != 0)  {
+                url += "/" + namespace;
+            }
+
+            if (namespace.lastIndexOf("/") != namespace.length() - 1) {
+                url += "/";
+            }
+        }
+
+        ClientResponse response = this.performRequest(url, params, new HttpGet(), true, type);
 
         ConfigurationValuesContainer container = (ConfigurationValuesContainer)response.getBody();
         return container.getValues();
