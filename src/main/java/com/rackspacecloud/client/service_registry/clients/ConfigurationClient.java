@@ -52,14 +52,14 @@ public class ConfigurationClient extends BaseClient {
         if (namespace != null) {
             // Make sure leading and trailing forward slashes are present
 
-            if (namespace.indexOf("/") != 0)  {
+            if (!namespace.startsWith("/"))  {
                 url += "/" + namespace;
             }
             else {
                 url += namespace;
             }
 
-            if (namespace.lastIndexOf("/") != namespace.length() - 1) {
+            if (!namespace.endsWith("/")) {
                 url += "/";
             }
         }
