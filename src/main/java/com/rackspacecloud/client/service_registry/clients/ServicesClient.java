@@ -40,6 +40,10 @@ public class ServicesClient extends BaseClient {
         super(authClient);
     }
 
+    public List<Service> list(Map<String, String> options) throws Exception {
+        return list(options, null);
+    }
+
     public List<Service> list(Map<String, String> options, String tag) throws Exception {
         Type type = new TypeToken<ServicesContainer>() {}.getType();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
