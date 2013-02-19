@@ -134,7 +134,7 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        String url = (this.url + "/" + this.authClient.authToken.getTenant().get("id") + path);
+        String url = (this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path);
 
         if (params != null) {
             url += "?" + URLEncodedUtils.format(params, "UTF-8");
@@ -142,7 +142,7 @@ public abstract class BaseClient {
 
         method.setURI(new URI(url));
         method.setHeader("User-Agent", Client.VERSION);
-        method.setHeader("X-Auth-Token", this.authClient.authToken.getId());
+        method.setHeader("X-Auth-Token", this.authClient.getAuthToken().getId());
 
         HttpResponse response = this.client.execute(method);
         statusCode = response.getStatusLine().getStatusCode();
@@ -166,9 +166,9 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        method.setURI(new URI(this.url + "/" + this.authClient.authToken.getTenant().get("id") + path));
+        method.setURI(new URI(this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path));
         method.setHeader("User-Agent", Client.VERSION);
-        method.setHeader("X-Auth-Token", this.authClient.authToken.getId());
+        method.setHeader("X-Auth-Token", this.authClient.getAuthToken().getId());
 
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()

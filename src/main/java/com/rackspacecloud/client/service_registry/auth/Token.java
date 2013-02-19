@@ -20,13 +20,13 @@ package com.rackspacecloud.client.service_registry.auth;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
+
 public class Token {
-    protected String id;
-    protected String expires;
-    protected Map<String, Integer> tenant;
+    private String id;
+    private String expires;
+    private Map<String, Integer> tenant;
 
     public String getId() {
         return id;

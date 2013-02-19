@@ -18,7 +18,7 @@
 package com.rackspacecloud.client.service_registry.auth;
 
 public class Access {
-    protected Token token;
+    private Token token;
 
     public Token getToken() {
         return token;
