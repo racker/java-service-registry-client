@@ -20,17 +20,13 @@ package com.rackspacecloud.client.service_registry.clients;
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.containers.ConfigurationValuesContainer;
-import com.rackspacecloud.client.service_registry.containers.ServicesContainer;
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
-import com.rackspacecloud.client.service_registry.objects.Service;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
