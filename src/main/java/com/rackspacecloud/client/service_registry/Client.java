@@ -29,11 +29,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 public class Client {
-    public final SessionsClient sessions;
-    public final ServicesClient services;
-    public final ConfigurationClient configuration;
-    public final ViewsClient views;
-    public final AccountClient account;
+    private final SessionsClient sessions;
+    private final ServicesClient services;
+    private final ConfigurationClient configuration;
+    private final ViewsClient views;
+    private final AccountClient account;
 
     public static final String VERSION = "java-service-registry-client/v1.0.0-SNAPSHOT";
 
@@ -63,4 +63,10 @@ public class Client {
         this.views = new ViewsClient(authClient);
         this.account = new AccountClient(authClient);
     }
+    
+    public SessionsClient getSessionsClient() { return sessions; }
+    public ServicesClient getServicesClient() { return services; }
+    public ConfigurationClient getConfigurationClient() { return configuration; }
+    public ViewsClient getViewsClient() { return views; }
+    public AccountClient getAccountClient() { return account; }
 }

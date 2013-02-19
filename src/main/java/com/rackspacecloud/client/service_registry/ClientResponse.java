@@ -28,11 +28,10 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 public class ClientResponse {
-    private HttpResponse response;
-    private boolean parseAsJson;
-    private Type responseType;
-
-    private Object body;
+    private final HttpResponse response;
+    private final boolean parseAsJson;
+    private final Type responseType;
+    private final Object body;
 
     public ClientResponse(HttpResponse response) throws IOException, ValidationException {
         this(response, false, null);
@@ -43,10 +42,10 @@ public class ClientResponse {
         this.parseAsJson = parseAsJson;
         this.responseType = responseType;
 
-        this.processResponse();
+        this.body = processResponse();
     }
 
-    private void processResponse() throws IOException, ValidationException {
+    private Object processResponse() throws IOException, ValidationException {
         Object data = null;
         HttpEntity entity = this.response.getEntity();
         int statusCode = response.getStatusLine().getStatusCode();
@@ -66,7 +65,7 @@ public class ClientResponse {
             }
         }
         
-        this.body = data;
+        return data;
     }
 
     public Object getBody() {
