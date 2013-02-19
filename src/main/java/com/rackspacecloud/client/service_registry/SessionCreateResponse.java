@@ -17,7 +17,6 @@
 
 package com.rackspacecloud.client.service_registry;
 
-import com.rackspacecloud.client.service_registry.clients.AuthClient;
 import com.rackspacecloud.client.service_registry.objects.Session;
 
 public class SessionCreateResponse {
@@ -25,10 +24,10 @@ public class SessionCreateResponse {
     private final String token;
     private final HeartBeater heartbeater;
 
-    public SessionCreateResponse(AuthClient authClient, Session session, String token) {
+    public SessionCreateResponse(HeartBeater heartbeater, Session session, String token) {
         this.session = session;
         this.token = token;
-        this.heartbeater = new HeartBeater(authClient, this.session.getId(), this.getToken(), this.session.getHeartbeatTimeout());
+        this.heartbeater = heartbeater;
     }
 
     public Session getSession() {
