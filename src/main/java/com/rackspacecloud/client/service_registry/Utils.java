@@ -17,37 +17,7 @@
 
 package com.rackspacecloud.client.service_registry;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 public class Utils {
-    public static Map<String, Object> parseJson(String json) {
-        JsonObject object = (JsonObject) new JsonParser().parse(json);
-        Set<Map.Entry<String, JsonElement>> set = object.entrySet();
-        Iterator<Map.Entry<String, JsonElement>> iterator = set.iterator();
-        Map<String, Object> map = new HashMap<String, Object>();
-
-        while (iterator.hasNext()) {
-            Map.Entry<String, JsonElement> entry = iterator.next();
-            String key = entry.getKey();
-            JsonElement value = entry.getValue();
-
-            if (!value.isJsonPrimitive()) {
-                map.put(key, new JsonParser().parse(value.toString()));
-            }
-            else {
-                map.put(key, value.getAsString());
-            }
-        }
-
-        return map;
-    }
 
     public static String getIdFromLocationHeader(String value) {
         String[] split = value.split("/");

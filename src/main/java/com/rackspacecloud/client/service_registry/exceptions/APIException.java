@@ -18,4 +18,7 @@
 package com.rackspacecloud.client.service_registry.exceptions;
 
 public class APIException extends Exception {
+    public APIException(String message) {
+        super(message);
+    }
 }

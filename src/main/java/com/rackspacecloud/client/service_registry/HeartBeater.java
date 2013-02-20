@@ -38,8 +38,9 @@ public class HeartBeater extends BaseClient {
     private final String sessionId;
     private final Integer heartbeatTimeoutSecs;
     private final long heartbeatIntervalMillis;
-    private String nextToken;
-    private boolean stopped = false;
+    private final String initialToken;
+    
+    private volatile boolean stopped = false;
     private volatile Thread hbThread = null;
     
     private static final Logger logger = LoggerFactory.getLogger(HeartBeater.class);
@@ -47,7 +48,7 @@ public class HeartBeater extends BaseClient {
     public HeartBeater(AuthClient authClient, String sessionId, String initialToken, int timeout) {
         super(authClient);
         this.sessionId = sessionId;
-        this.nextToken = initialToken;
+        this.initialToken = initialToken;
         this.heartbeatTimeoutSecs = timeout;
         this.heartbeatIntervalMillis = (long)(timeout * 1000L * (timeout < 15 ? 0.6d : 0.9d));
     }
@@ -57,17 +58,18 @@ public class HeartBeater extends BaseClient {
         String path = String.format("/sessions/%s/heartbeat", this.sessionId);
         int lastHttpStatus = 0;
         boolean isError = false;
+        String nextToken = initialToken;
         
-        while (!this.stopped && (this.nextToken != null)) {
+        while (!this.stopped && (nextToken != null)) {
             long start = System.currentTimeMillis();
             logger.debug(String.format("Sending hearbeat (timeout=%d secs)...", this.heartbeatTimeoutSecs));
 
-            HeartbeatToken payload = new HeartbeatToken(this.nextToken);
+            HeartbeatToken payload = new HeartbeatToken(nextToken);
 
             try {
                 response = this.performRequestWithPayload(path, null, new HttpPost(), payload, true, HeartbeatToken.class);
                 lastHttpStatus = response.getStatusCode();
-                this.nextToken = ((HeartbeatToken)response.getBody()).getToken();
+                nextToken = ((HeartbeatToken)response.getBody()).getToken();
                 if (lastHttpStatus != 200)
                     // heartbeat again instantly or exit out of the loop because a 404 will yield a null token.
                     continue;
@@ -85,7 +87,7 @@ public class HeartBeater extends BaseClient {
 
             this.emit(new HeartbeatAckEvent(this, response));
             try {
-                logger.debug(String.format("Sleeping before sending next heartbeat (delay=%sms, nextToken=%s)", actualInterval, this.nextToken));
+                logger.debug(String.format("Sleeping before sending next heartbeat (delay=%sms, nextToken=%s)", actualInterval, nextToken));
                 hbThread.sleep(actualInterval);
             }
             catch (InterruptedException ex) {
@@ -112,7 +114,7 @@ public class HeartBeater extends BaseClient {
         }
     }
 
-    public synchronized  void stop() {
+    public synchronized void stop() {
         this.stopped = true;
         hbThread.interrupt();
     }

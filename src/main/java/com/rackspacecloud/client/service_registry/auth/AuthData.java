@@ -17,10 +17,22 @@
 
 package com.rackspacecloud.client.service_registry.auth;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class AuthData {
-    protected Access access;
+    private static final Gson gson;
+    private Access access;
+    
+    static {
+        gson = new GsonBuilder().create();
+    }
 
     public Access getAccess() {
         return this.access;
+    }
+    
+    public static AuthData fromJson(String json) {
+        return gson.fromJson(json, AuthData.class);
     }
 }
