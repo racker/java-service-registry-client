@@ -19,6 +19,7 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
+import com.rackspacecloud.client.service_registry.HeartBeater;
 import com.rackspacecloud.client.service_registry.SessionCreateResponse;
 import com.rackspacecloud.client.service_registry.Utils;
 import com.rackspacecloud.client.service_registry.containers.SessionsContainer;
@@ -29,13 +30,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SessionsClient extends BaseClient {
+    private final AuthClient authClient;
+    
     public SessionsClient(AuthClient authClient) {
         super(authClient);
+        this.authClient = authClient;
     }
 
     public List<Session> list(Map<String, String> options) throws Exception {
@@ -58,7 +61,8 @@ public class SessionsClient extends BaseClient {
         String id = Utils.getIdFromLocationHeader(response.getHeader("Location")[0].getValue());
         HeartbeatToken hbt = (HeartbeatToken)response.getBody();
 
-        return new SessionCreateResponse(this.authClient, new Session(id, heartbeatTimeout, null, metadata), hbt.getToken());
+        HeartBeater heartBeater = new HeartBeater(this.authClient, session.getId(), hbt.getToken(), session.getHeartbeatTimeout());
+        return new SessionCreateResponse(heartBeater, session, hbt.getToken());
     }
 
     public SessionsClient update(String id, int heartbeatTimeout, Map<String, String> metadata) throws Exception {

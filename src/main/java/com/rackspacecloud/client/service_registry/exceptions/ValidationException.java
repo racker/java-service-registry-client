@@ -18,16 +18,15 @@
 package com.rackspacecloud.client.service_registry.exceptions;
 
 public class ValidationException extends APIException {
-    private Integer code;
-    private String type;
-    private String message;
-    private String details;
-    private String txnId;
+    private final Integer code;
+    private final String type;
+    private final String details;
+    private final String txnId;
 
     public ValidationException(Integer code, String type, String message, String details, String txnId) {
+        super(message);
         this.code = code;
         this.type = type;
-        this.message = message;
         this.details = details;
         this.txnId = txnId;
     }
@@ -38,10 +37,6 @@ public class ValidationException extends APIException {
 
     public String getType() {
         return type;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public String getDetails() {

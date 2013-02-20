@@ -18,11 +18,10 @@
 package com.rackspacecloud.client.service_registry.containers;
 
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
-import com.rackspacecloud.client.service_registry.objects.Service;
 
 import java.util.List;
 
-public class ConfigurationValuesContainer extends Container {
+public abstract class ConfigurationValuesContainer extends Container {
     private List<ConfigurationValue> values;
 
     public List<ConfigurationValue> getValues() {

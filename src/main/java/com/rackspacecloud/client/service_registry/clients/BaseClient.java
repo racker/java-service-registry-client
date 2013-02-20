@@ -25,8 +25,6 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EventListener;
-import java.util.EventObject;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -36,7 +34,6 @@ import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.events.ClientEvent;
 import com.rackspacecloud.client.service_registry.events.ClientEventListener;
 import com.rackspacecloud.client.service_registry.events.ClientEventThread;
-import com.rackspacecloud.client.service_registry.events.HeartbeatEventListener;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -61,12 +58,12 @@ public abstract class BaseClient {
     private static final String DEFAULT_URL = "https://dfw.registry.api.rackspacecloud.com/v1.0";
     private static final int MAX_401_RETRIES = 1;
 
-    private String url = BaseClient.DEFAULT_URL;
+    private final String url = BaseClient.DEFAULT_URL;
 
-    protected AuthClient authClient = null;
-    private HttpClient client = null;
+    private final AuthClient authClient;
+    private final HttpClient client;
     
-    private Collection<ClientEventListener> listeners;
+    private final Collection<ClientEventListener> listeners;
 
     public BaseClient(AuthClient authClient) {
         this(new DefaultHttpClient() {
@@ -134,7 +131,7 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        String url = (this.url + "/" + this.authClient.authToken.getTenant().get("id") + path);
+        String url = (this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path);
 
         if (params != null) {
             url += "?" + URLEncodedUtils.format(params, "UTF-8");
@@ -142,7 +139,7 @@ public abstract class BaseClient {
 
         method.setURI(new URI(url));
         method.setHeader("User-Agent", Client.VERSION);
-        method.setHeader("X-Auth-Token", this.authClient.authToken.getId());
+        method.setHeader("X-Auth-Token", this.authClient.getAuthToken().getId());
 
         HttpResponse response = this.client.execute(method);
         statusCode = response.getStatusLine().getStatusCode();
@@ -166,9 +163,9 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        method.setURI(new URI(this.url + "/" + this.authClient.authToken.getTenant().get("id") + path));
+        method.setURI(new URI(this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path));
         method.setHeader("User-Agent", Client.VERSION);
-        method.setHeader("X-Auth-Token", this.authClient.authToken.getId());
+        method.setHeader("X-Auth-Token", this.authClient.getAuthToken().getId());
 
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
