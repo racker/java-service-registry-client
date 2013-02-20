@@ -64,9 +64,9 @@ public class Client {
         this.account = new AccountClient(authClient);
     }
     
-    public SessionsClient getSessionsClient() { return sessions; }
-    public ServicesClient getServicesClient() { return services; }
-    public ConfigurationClient getConfigurationClient() { return configuration; }
-    public ViewsClient getViewsClient() { return views; }
-    public AccountClient getAccountClient() { return account; }
+    public SessionsClient getSessionsClient() { return this.sessions; }
+    public ServicesClient getServicesClient() { return this.services; }
+    public ConfigurationClient getConfigurationClient() { return this.configuration; }
+    public ViewsClient getViewsClient() { return this.views; }
+    public AccountClient getAccountClient() { return this.account; }
 }
