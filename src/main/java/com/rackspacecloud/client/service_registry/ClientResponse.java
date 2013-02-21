@@ -18,7 +18,9 @@
 package com.rackspacecloud.client.service_registry;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.rackspacecloud.client.service_registry.exceptions.ValidationException;
+import com.rackspacecloud.client.service_registry.objects.EventPayload;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -61,7 +63,10 @@ public class ClientResponse {
             data = EntityUtils.toString(entity);
 
             if (this.parseAsJson && this.responseType != null) {
-                data = new Gson().fromJson(data.toString(), this.responseType);
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.registerTypeAdapter(EventPayload.class,
+                                                        new EventPayload()).create();
+                data = gson.fromJson(data.toString(), this.responseType);
             }
         }
         

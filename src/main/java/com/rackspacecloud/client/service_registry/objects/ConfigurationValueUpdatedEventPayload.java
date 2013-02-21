@@ -17,35 +17,26 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-import java.util.HashMap;
-import java.util.Map;
+public class ConfigurationValueUpdatedEventPayload extends EventPayload {
+    private String configurationId;
+    private String oldValue;
+    private String newValue;
 
-public class Event {
-    private String id;
-    private Long timestamp;
-    private String type;
-    private EventPayload payload;
-
-    public Event(String id, Long timestamp, String type, EventPayload payload) {
-        this.id = id;
-        this.timestamp = timestamp;
-        this.type = type;
-        this.payload = payload;
+    public ConfigurationValueUpdatedEventPayload(String configurationId, String oldValue, String newValue) {
+        this.configurationId = configurationId;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
     }
 
-    public String getId() {
-        return id;
+    public String getConfigurationId() {
+        return configurationId;
     }
 
-    public Long getTimestamp() {
-        return timestamp;
+    public String getOldValue() {
+        return oldValue;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public EventPayload getPayload() {
-        return payload;
+    public String getNewValue() {
+        return newValue;
     }
 }
