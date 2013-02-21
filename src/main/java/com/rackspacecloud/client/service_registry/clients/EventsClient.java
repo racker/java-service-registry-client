@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EventsClient extends BaseClient {
-    private static final ArrayList VALID_EVENT_TYPES = new ArrayList<String>(Arrays.asList(new String[]{
+    private static final List VALID_EVENT_TYPES = new ArrayList<String>(Arrays.asList(new String[]{
             "service.join",
             "services.timeout",
             "configuration_value.update",
