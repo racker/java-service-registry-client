@@ -22,14 +22,30 @@ import java.util.Map;
 
 public class Event {
     private String id;
-    private Integer timestamp;
+    private Long timestamp;
     private String type;
-    private Map<String, String> payload = new HashMap<String, String>();
+    private Map<String, Object> payload = new HashMap<String, Object>();
 
-    public Event(String id, Integer timestamp, String type, Map<String, String> payload) {
+    public Event(String id, Long timestamp, String type, Map<String, Object> payload) {
         this.id = id;
         this.timestamp = timestamp;
         this.type = type;
         this.payload = payload;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Map<String, Object> getPayload() {
+        return payload;
     }
 }
