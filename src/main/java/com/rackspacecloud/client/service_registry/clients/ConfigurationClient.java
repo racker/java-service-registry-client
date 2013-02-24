@@ -19,6 +19,7 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
+import com.rackspacecloud.client.service_registry.PaginationOptions;
 import com.rackspacecloud.client.service_registry.containers.ConfigurationValuesContainer;
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
 import org.apache.http.NameValuePair;
@@ -35,15 +36,14 @@ public class ConfigurationClient extends BaseClient {
         super(authClient);
     }
 
-    public List<ConfigurationValue> list(Map<String, String> options) throws Exception {
-        return list(options, null);
+    public List<ConfigurationValue> list(PaginationOptions paginationOptions) throws Exception {
+        return list(paginationOptions, null);
     }
 
-    public List<ConfigurationValue> list(Map<String, String> options, String namespace) throws Exception {
+    public List<ConfigurationValue> list(PaginationOptions paginationOptions, String namespace) throws Exception {
         String url = "/configuration";
 
         Type type = new TypeToken<ConfigurationValuesContainer>() {}.getType();
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
 
         if (namespace != null) {
             // Make sure leading and trailing forward slashes are present
@@ -59,7 +59,7 @@ public class ConfigurationClient extends BaseClient {
             }
         }
 
-        ClientResponse response = this.performRequest(url, params, new HttpGet(), true, type);
+        ClientResponse response = this.performListRequest(paginationOptions, url, null, new HttpGet(), true, type);
 
         ConfigurationValuesContainer container = (ConfigurationValuesContainer)response.getBody();
         return container.getValues();
