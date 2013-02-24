@@ -46,4 +46,11 @@ public class ValidationException extends APIException {
     public String getTxnId() {
         return txnId;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[ValidationException code=%s, type=%s, " +
+                             "details=\"%s\" txnId=%s]", this.code, this.type,
+                             this.details, this.txnId);
+    }
 }
