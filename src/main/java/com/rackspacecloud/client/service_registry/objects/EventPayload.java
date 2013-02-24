@@ -72,7 +72,6 @@ public class EventPayload implements
             JsonArray jsonArray = json.getAsJsonArray();
             ArrayList<Service> services = new Gson().fromJson(jsonArray, new TypeToken<ArrayList<Service>>() {}.getType());
 
-            System.out.println(services);
             return new ServicesTimeoutEventPayload(services);
         }
 
