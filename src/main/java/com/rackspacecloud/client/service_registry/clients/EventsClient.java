@@ -59,19 +59,17 @@ public class EventsClient extends BaseClient {
      */
     private List<BaseEvent> parseEvents(List<Event> events) throws Exception {
         String type;
-        List<BaseEvent> result = new ArrayList<BaseEvent>();
-
         EventPayload payload;
+        BaseEvent event;
+
         String configurationValueId;
         ConfigurationValue oldValue, newValue;
 
-        BaseEvent event;
+        List<BaseEvent> result = new ArrayList<BaseEvent>();
 
         for (Event rawEvent : events) {
             type = rawEvent.getType();
             payload = rawEvent.getPayload();
-
-            event = null;
 
             if (!VALID_EVENT_TYPES.contains(type)) {
                 throw new Exception("Unrecognized event type: " + type);
