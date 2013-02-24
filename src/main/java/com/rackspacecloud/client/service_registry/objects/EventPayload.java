@@ -21,6 +21,7 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +36,9 @@ public class EventPayload implements
 
     @Override
     public EventPayload deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
-        JsonObject jsonObject;
-
         // TODO: This is nasty - propagate type here
-        if (json.getClass() == JsonObject.class) {
-            jsonObject = json.getAsJsonObject();
+        if (json.getClass().equals(JsonObject.class)) {
+            JsonObject jsonObject = json.getAsJsonObject();
 
             if (jsonObject.has("configuration_value_id")) {
                 // configuration_value.update, configuration_value.remove
@@ -72,6 +71,11 @@ public class EventPayload implements
                 Service service = new Service(id, sessionId, tags, metadata);
                 return new ServiceJoinEventPayload(service);
             }
+        }
+        else if (json.getClass().equals(JsonObject.class)) {
+            // services.timeout
+            JsonArray jsonArray = json.getAsJsonArray();
+            ArrayList<Service> services = new ArrayList<Service>();
         }
 
         return null;

@@ -19,9 +19,9 @@ package com.rackspacecloud.client.service_registry;
 
 import com.rackspacecloud.client.service_registry.clients.AuthClient;
 import com.rackspacecloud.client.service_registry.clients.BaseClient;
-import com.rackspacecloud.client.service_registry.events.HeartbeatAckEvent;
-import com.rackspacecloud.client.service_registry.events.HeartbeatErrorEvent;
-import com.rackspacecloud.client.service_registry.events.HeartbeatStoppedEvent;
+import com.rackspacecloud.client.service_registry.events.client.HeartbeatAckEvent;
+import com.rackspacecloud.client.service_registry.events.client.HeartbeatErrorEvent;
+import com.rackspacecloud.client.service_registry.events.client.HeartbeatStoppedEvent;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
 import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;

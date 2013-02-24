@@ -1,4 +1,4 @@
-package com.rackspacecloud.client.service_registry.rsr_events;
+package com.rackspacecloud.client.service_registry.events.server;
 
 public class BaseEvent {
     private String id;

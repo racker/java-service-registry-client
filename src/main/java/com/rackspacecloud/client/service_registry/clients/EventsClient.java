@@ -19,10 +19,10 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.objects.*;
-import com.rackspacecloud.client.service_registry.rsr_events.BaseEvent;
-import com.rackspacecloud.client.service_registry.rsr_events.ConfigurationValueRemovedEvent;
-import com.rackspacecloud.client.service_registry.rsr_events.ConfigurationValueUpdatedEvent;
-import com.rackspacecloud.client.service_registry.rsr_events.ServiceJoinEvent;
+import com.rackspacecloud.client.service_registry.events.server.BaseEvent;
+import com.rackspacecloud.client.service_registry.events.server.ConfigurationValueRemovedEvent;
+import com.rackspacecloud.client.service_registry.events.server.ConfigurationValueUpdatedEvent;
+import com.rackspacecloud.client.service_registry.events.server.ServiceJoinEvent;
 import org.apache.http.client.methods.HttpGet;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.containers.EventsContainer;
