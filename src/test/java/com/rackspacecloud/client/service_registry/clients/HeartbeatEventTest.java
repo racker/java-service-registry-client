@@ -2,12 +2,12 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.HeartBeater;
-import com.rackspacecloud.client.service_registry.events.ClientEvent;
-import com.rackspacecloud.client.service_registry.events.ClientEventListener;
-import com.rackspacecloud.client.service_registry.events.HeartbeatAckEvent;
-import com.rackspacecloud.client.service_registry.events.HeartbeatErrorEvent;
-import com.rackspacecloud.client.service_registry.events.HeartbeatEventListener;
-import com.rackspacecloud.client.service_registry.events.HeartbeatStoppedEvent;
+import com.rackspacecloud.client.service_registry.events.client.ClientEvent;
+import com.rackspacecloud.client.service_registry.events.client.ClientEventListener;
+import com.rackspacecloud.client.service_registry.events.client.HeartbeatAckEvent;
+import com.rackspacecloud.client.service_registry.events.client.HeartbeatErrorEvent;
+import com.rackspacecloud.client.service_registry.events.client.HeartbeatEventListener;
+import com.rackspacecloud.client.service_registry.events.client.HeartbeatStoppedEvent;
 import org.apache.http.HttpVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.message.BasicHttpResponse;
