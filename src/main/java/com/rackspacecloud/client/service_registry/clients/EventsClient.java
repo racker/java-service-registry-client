@@ -18,11 +18,8 @@
 package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
+import com.rackspacecloud.client.service_registry.events.server.*;
 import com.rackspacecloud.client.service_registry.objects.*;
-import com.rackspacecloud.client.service_registry.events.server.BaseEvent;
-import com.rackspacecloud.client.service_registry.events.server.ConfigurationValueRemovedEvent;
-import com.rackspacecloud.client.service_registry.events.server.ConfigurationValueUpdatedEvent;
-import com.rackspacecloud.client.service_registry.events.server.ServiceJoinEvent;
 import org.apache.http.client.methods.HttpGet;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.containers.EventsContainer;
@@ -65,7 +62,6 @@ public class EventsClient extends BaseClient {
         List<BaseEvent> result = new ArrayList<BaseEvent>();
 
         EventPayload payload;
-        Service service;
         String configurationValueId;
         ConfigurationValue oldValue, newValue;
 
@@ -83,10 +79,17 @@ public class EventsClient extends BaseClient {
 
             if (type.compareTo("service.join") == 0) {
                 ServiceJoinEventPayload eventPayload = ((ServiceJoinEventPayload)payload);
+
                 event = new ServiceJoinEvent(eventPayload.getService());
+                result.add(event);
             }
             else if (type.compareTo("services.timeout") == 0) {
+                ServicesTimeoutEventPayload eventPayload = ((ServicesTimeoutEventPayload)payload);
 
+                for (Service service : eventPayload.getServices())  {
+                    event = new ServiceTimeoutEvent(service);
+                    result.add(event);
+                }
             }
             else if (type.compareTo("configuration_value.update") == 0) {
                 ConfigurationValueUpdatedEventPayload eventPayload = ((ConfigurationValueUpdatedEventPayload)payload);
@@ -96,6 +99,7 @@ public class EventsClient extends BaseClient {
                 newValue = new ConfigurationValue(configurationValueId,eventPayload.getNewValue());
 
                 event = new ConfigurationValueUpdatedEvent(oldValue, newValue);
+                result.add(event);
             }
             else if (type.compareTo("configuration_value.remove") == 0) {
 
@@ -105,9 +109,8 @@ public class EventsClient extends BaseClient {
                 oldValue = (eventPayload.getOldValue() == null) ? null : new ConfigurationValue(configurationValueId, eventPayload.getOldValue());
 
                 event = new ConfigurationValueRemovedEvent(oldValue);
+                result.add(event);
             }
-
-            result.add(event);
         }
 
         return result;

@@ -63,19 +63,17 @@ public class EventPayload implements
             }
             else {
                 // service.join
-                String id = jsonObject.get("id").getAsString();
-                String sessionId = jsonObject.get("session_id").getAsString();
-                List<String> tags = new Gson().fromJson(jsonObject.get("tags"), new TypeToken<List<String>>() {}.getType());
-                Map<String, String> metadata = new Gson().fromJson(jsonObject.get("metadata"), new TypeToken<Map<String, String>>() {}.getType());
-
-                Service service = new Service(id, sessionId, tags, metadata);
+                Service service = new Gson().fromJson(jsonObject, new TypeToken<Service>() {}.getType());
                 return new ServiceJoinEventPayload(service);
             }
         }
-        else if (json.getClass().equals(JsonObject.class)) {
+        else if (json.getClass().equals(JsonArray.class)) {
             // services.timeout
             JsonArray jsonArray = json.getAsJsonArray();
-            ArrayList<Service> services = new ArrayList<Service>();
+            ArrayList<Service> services = new Gson().fromJson(jsonArray, new TypeToken<ArrayList<Service>>() {}.getType());
+
+            System.out.println(services);
+            return new ServicesTimeoutEventPayload(services);
         }
 
         return null;

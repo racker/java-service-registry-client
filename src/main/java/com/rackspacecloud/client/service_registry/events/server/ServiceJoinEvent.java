@@ -12,4 +12,9 @@ public class ServiceJoinEvent extends BaseEvent {
     public Service getService() {
         return service;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[ServiceJoinEvent id=%s]", this.service.getId());
+    }
 }
