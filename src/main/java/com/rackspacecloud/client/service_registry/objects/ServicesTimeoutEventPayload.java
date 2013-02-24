@@ -17,35 +17,16 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-public class Event {
-    private String id;
-    private Long timestamp;
-    private String type;
-    private EventPayload payload;
+public class ServicesTimeoutEventPayload extends EventPayload {
+    private List<Service> services;
 
-    public Event(String id, Long timestamp, String type, EventPayload payload) {
-        this.id = id;
-        this.timestamp = timestamp;
-        this.type = type;
-        this.payload = payload;
+    public ServicesTimeoutEventPayload(List<Service> services) {
+        this.services = services;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public Long getTimestamp() {
-        return timestamp;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public EventPayload getPayload() {
-        return payload;
+    public List<Service> getServices() {
+        return services;
     }
 }

@@ -1,4 +1,4 @@
-package com.rackspacecloud.client.service_registry.events;
+package com.rackspacecloud.client.service_registry.events.client;
 
 import java.util.EventListener;
 

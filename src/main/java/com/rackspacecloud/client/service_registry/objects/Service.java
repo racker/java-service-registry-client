@@ -26,6 +26,7 @@ import java.util.Map;
 
 public class Service {
     private String id;
+
     @SerializedName("session_id")
     private String sessionId;
     private List<String> tags = new ArrayList<String>();
