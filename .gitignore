@@ -1,3 +1,4 @@
 target/
 out/
+lib/slf4j-simple-1.7.2.jar
 src/main/java/com/rackspacecloud/client/service_registry/Main.java
