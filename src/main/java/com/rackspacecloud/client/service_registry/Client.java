@@ -33,6 +33,7 @@ public class Client {
     private final ServicesClient services;
     private final ConfigurationClient configuration;
     private final ViewsClient views;
+    private final EventsClient events;
     private final AccountClient account;
 
     public static final String VERSION = "java-service-registry-client/v1.0.0-SNAPSHOT";
@@ -61,6 +62,7 @@ public class Client {
         this.services = new ServicesClient(authClient);
         this.configuration = new ConfigurationClient(authClient);
         this.views = new ViewsClient(authClient);
+        this.events = new EventsClient(authClient);
         this.account = new AccountClient(authClient);
     }
     
@@ -68,5 +70,6 @@ public class Client {
     public ServicesClient getServicesClient() { return this.services; }
     public ConfigurationClient getConfigurationClient() { return this.configuration; }
     public ViewsClient getViewsClient() { return this.views; }
+    public EventsClient getEventsClient () { return this.events; }
     public AccountClient getAccountClient() { return this.account; }
 }

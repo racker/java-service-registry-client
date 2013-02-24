@@ -1,4 +1,4 @@
-package com.rackspacecloud.client.service_registry.events;
+package com.rackspacecloud.client.service_registry.events.client;
 
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.HeartBeater;
