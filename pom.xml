@@ -11,7 +11,7 @@
     <name>service-registry-client</name>
     <artifactId>service-registry-client</artifactId>
     <groupId>com.rackspacecloud</groupId>
-    <version>1.1.4-SNAPSHOT</version>
+    <version>1.1.4</version>
     <packaging>jar</packaging>
     <url>https://github.com/racker/java-service-registry-client</url>
 
