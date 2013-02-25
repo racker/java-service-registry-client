@@ -19,6 +19,7 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
+import com.rackspacecloud.client.service_registry.PaginationOptions;
 import com.rackspacecloud.client.service_registry.containers.OverviewContainer;
 import com.rackspacecloud.client.service_registry.objects.Overview;
 import org.apache.http.client.methods.HttpGet;
@@ -32,9 +33,9 @@ public class ViewsClient extends BaseClient {
         super(authClient);
     }
 
-    public List<Overview> getOverview(Map<String, String> options) throws Exception {
+    public List<Overview> getOverview(PaginationOptions paginationOptions) throws Exception {
         Type type = new TypeToken<OverviewContainer>() {}.getType();
-        ClientResponse response = this.performRequest("/views/overview", null, new HttpGet(), true, type);
+        ClientResponse response = this.performListRequest(paginationOptions, "/views/overview", null, new HttpGet(), true, type);
 
         OverviewContainer container = (OverviewContainer)response.getBody();
         return container.getValues();
