@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rackspacecloud.client.service_registry.Client;
 import com.rackspacecloud.client.service_registry.ClientResponse;
+import com.rackspacecloud.client.service_registry.PaginationOptions;
 import com.rackspacecloud.client.service_registry.events.client.ClientEvent;
 import com.rackspacecloud.client.service_registry.events.client.ClientEventListener;
 import com.rackspacecloud.client.service_registry.events.client.ClientEventThread;
@@ -48,6 +49,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
@@ -116,6 +118,24 @@ public abstract class BaseClient {
                 });
             }
         }
+    }
+
+    protected ClientResponse performListRequest(PaginationOptions paginationOptions, String path, List<NameValuePair> params, HttpRequestBase method, boolean parseAsJson, Type responseType) throws Exception {
+        if (params == null) {
+            params = new ArrayList<NameValuePair>();
+        }
+
+        if (paginationOptions != null) {
+            if (paginationOptions.getLimit() != null) {
+                params.add(new BasicNameValuePair("limit", paginationOptions.getLimit().toString()));
+            }
+
+            if (paginationOptions.getMarker() != null) {
+                params.add(new BasicNameValuePair("marker", paginationOptions.getMarker()));
+            }
+        }
+
+        return performRequest(path, params, method, parseAsJson, responseType, false, 0);
     }
     
     protected ClientResponse performRequest(String path, List<NameValuePair> params, HttpRequestBase method) throws Exception {

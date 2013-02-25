@@ -18,10 +18,7 @@
 package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
-import com.rackspacecloud.client.service_registry.ClientResponse;
-import com.rackspacecloud.client.service_registry.HeartBeater;
-import com.rackspacecloud.client.service_registry.SessionCreateResponse;
-import com.rackspacecloud.client.service_registry.Utils;
+import com.rackspacecloud.client.service_registry.*;
 import com.rackspacecloud.client.service_registry.containers.SessionsContainer;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
 import com.rackspacecloud.client.service_registry.objects.Session;
@@ -41,9 +38,9 @@ public class SessionsClient extends BaseClient {
         this.authClient = authClient;
     }
 
-    public List<Session> list(Map<String, String> options) throws Exception {
+    public List<Session> list(PaginationOptions paginationOptions) throws Exception {
         Type type = new TypeToken<SessionsContainer>() {}.getType();
-        ClientResponse response = this.performRequest("/sessions", null, new HttpGet(), true, type);
+        ClientResponse response = this.performListRequest(paginationOptions, "/sessions", null, new HttpGet(), true, type);
 
         SessionsContainer container = (SessionsContainer)response.getBody();
         return container.getValues();

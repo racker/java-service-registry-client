@@ -19,6 +19,7 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
+import com.rackspacecloud.client.service_registry.PaginationOptions;
 import com.rackspacecloud.client.service_registry.containers.ServicesContainer;
 import com.rackspacecloud.client.service_registry.objects.Service;
 import com.rackspacecloud.client.service_registry.objects.Session;
@@ -39,11 +40,11 @@ public class ServicesClient extends BaseClient {
         super(authClient);
     }
 
-    public List<Service> list(Map<String, String> options) throws Exception {
-        return list(options, null);
+    public List<Service> list(PaginationOptions paginationOptions) throws Exception {
+        return list(paginationOptions, null);
     }
 
-    public List<Service> list(Map<String, String> options, String tag) throws Exception {
+    public List<Service> list(PaginationOptions paginationOptions, String tag) throws Exception {
         Type type = new TypeToken<ServicesContainer>() {}.getType();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
@@ -51,7 +52,7 @@ public class ServicesClient extends BaseClient {
             params.add(new BasicNameValuePair("tag", tag));
         }
 
-        ClientResponse response = this.performRequest("/services", params, new HttpGet(), true, type);
+        ClientResponse response = this.performListRequest(paginationOptions, "/services", params, new HttpGet(), true, type);
 
         ServicesContainer container = (ServicesContainer)response.getBody();
         return container.getValues();

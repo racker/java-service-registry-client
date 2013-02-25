@@ -17,7 +17,33 @@
 
 package com.rackspacecloud.client.service_registry;
 
-public class Region {
-    public static final String US = "us";
-    public static final String UK = "uk";
+public class PaginationOptions {
+    private Integer limit;
+    private String marker;
+
+    public PaginationOptions() {
+    }
+
+    public PaginationOptions(Integer limit, String marker) {
+        this.limit = limit;
+        this.marker = marker;
+    }
+
+    public PaginationOptions withLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public PaginationOptions withMarker(String marker) {
+        this.marker = marker;
+        return this;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
 }
