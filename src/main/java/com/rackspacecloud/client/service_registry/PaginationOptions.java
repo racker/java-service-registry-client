@@ -21,9 +21,22 @@ public class PaginationOptions {
     private Integer limit;
     private String marker;
 
+    public PaginationOptions() {
+    }
+
     public PaginationOptions(Integer limit, String marker) {
         this.limit = limit;
         this.marker = marker;
+    }
+
+    public PaginationOptions withLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public PaginationOptions withMarker(String marker) {
+        this.marker = marker;
+        return this;
     }
 
     public Integer getLimit() {
