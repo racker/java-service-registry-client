@@ -59,7 +59,7 @@ public class SessionsClient extends BaseClient {
         HeartbeatToken hbt = (HeartbeatToken)response.getBody();
 
         HeartBeater heartBeater = new HeartBeater(this.authClient, session.getId(), hbt.getToken(), session.getHeartbeatTimeout());
-        return new SessionCreateResponse(heartBeater, session, hbt.getToken());
+        return new SessionCreateResponse(heartBeater, new Session(id, heartbeatTimeout, null, metadata), hbt.getToken());
     }
 
     public SessionsClient update(String id, int heartbeatTimeout, Map<String, String> metadata) throws Exception {
