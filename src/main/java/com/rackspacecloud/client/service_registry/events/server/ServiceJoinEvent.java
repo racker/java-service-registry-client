@@ -2,19 +2,13 @@ package com.rackspacecloud.client.service_registry.events.server;
 
 import com.rackspacecloud.client.service_registry.objects.Service;
 
-public class ServiceJoinEvent extends BaseEvent {
-    private Service service;
+public class ServiceJoinEvent extends AbstractServiceEvent {
 
     public ServiceJoinEvent(Service service) {
-        this.service = service;
+        super(service);
     }
-
-    public Service getService() {
-        return service;
-    }
-
     @Override
     public String toString() {
-        return String.format("[ServiceJoinEvent id=%s]", this.service.getId());
+        return String.format("[ServiceJoinEvent id=%s]", this.getService().getId());
     }
 }
