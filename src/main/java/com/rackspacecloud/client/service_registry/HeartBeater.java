@@ -70,9 +70,11 @@ public class HeartBeater extends BaseClient {
                 response = this.performRequestWithPayload(path, null, new HttpPost(), payload, true, HeartbeatToken.class);
                 lastHttpStatus = response.getStatusCode();
                 nextToken = ((HeartbeatToken)response.getBody()).getToken();
-                if (lastHttpStatus != 200)
+                if (lastHttpStatus != 200) {
+                    logger.debug(String.format("Heartbeat response was %d for session %s with txn %s", lastHttpStatus, this.sessionId, response.getHeader("x-response-id")[0]));
                     // heartbeat again instantly or exit out of the loop because a 404 will yield a null token.
                     continue;
+                }
             }
             catch (Exception ex) {
                 logger.error(String.format("Got exception while sending heartbeat, stopping heartbeating..."), ex);
