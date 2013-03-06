@@ -15,7 +15,7 @@ public class RSRServiceCacheBuilderImpl<T> implements ServiceCacheBuilder<T> {
     }
     
     public ServiceCache<T> build() {
-        return new RSRServiceCacheImpl<T>(this.discovery);
+        return new RSRServiceCacheImpl<T>(this.discovery, this.name);
     }
 
     public ServiceCacheBuilder<T> name(String name) {

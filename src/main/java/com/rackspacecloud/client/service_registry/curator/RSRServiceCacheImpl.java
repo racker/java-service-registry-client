@@ -16,6 +16,7 @@ import com.rackspacecloud.client.service_registry.events.server.ServiceTimeoutEv
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
@@ -26,12 +27,14 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     private final RSRServiceDiscoveryImpl<T> discovery;
     private final ListenerContainer<ServiceCacheListener> listenerContainer = new ListenerContainer<ServiceCacheListener>();
     private final ConcurrentMap<String, ServiceInstance<T>> instances = Maps.newConcurrentMap();
+    private final String name;
     
     private volatile Thread eventPoller = null;
     private volatile boolean shouldStopPolling = false;
     
-    public RSRServiceCacheImpl(RSRServiceDiscoveryImpl<T> discovery) {
+    public RSRServiceCacheImpl(RSRServiceDiscoveryImpl<T> discovery, String name) {
         this.discovery = discovery;
+        this.name = name;
     }
     
     //
@@ -45,6 +48,7 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     public synchronized void start() throws Exception {
         if (eventPoller != null) return;
         shouldStopPolling = false;
+        
         eventPoller = new Thread("Event poller for " + discovery.getClient()) {
             @Override
             public void run() {
@@ -71,14 +75,16 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
                                         
                                         // make sure the local collection is maintained.
                                         final AbstractServiceEvent ee = (AbstractServiceEvent)e;
-                                        try {
-                                            if (ee instanceof ServiceJoinEvent) {
-                                                instances.put(ee.getService().getId(), discovery.convert(ee.getService()));
-                                            } else if (ee instanceof ServiceTimeoutEvent) {
-                                                instances.remove(ee.getService().getId());
+                                        if (name == null || (name.equals(ee.getService().getMetadata().get("name")))) {
+                                            try {
+                                                if (ee instanceof ServiceJoinEvent) {
+                                                    instances.put(ee.getService().getId(), discovery.convert(ee.getService()));
+                                                } else if (ee instanceof ServiceTimeoutEvent) {
+                                                    instances.remove(ee.getService().getId());
+                                                }
+                                            } catch (Exception fromConverter) {
+                                                // todo: log it.
                                             }
-                                        } catch (Exception fromConverter) {
-                                            // todo: log it.
                                         }
                                     } catch (Throwable th) {
                                         // bad listener! todo: log only.
@@ -96,6 +102,24 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
                 shouldStopPolling = false;
             }
         };
+        
+        // backfill existing services.
+        List<String> names = new ArrayList<String>();
+        if (this.name != null) {
+            names.add(this.name);
+        } else {
+            for (String name : discovery.queryForNames()) {
+                names.add(name);
+            }
+        }
+        for (String name : names) {
+            for (ServiceInstance<T> instance : discovery.queryForInstances(name)) {
+                instances.put(instance.getId(), instance);
+            }
+        }
+        
+        // start the polling thread.
+        eventPoller.start();
     }
 
     //
