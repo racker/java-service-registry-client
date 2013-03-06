@@ -59,7 +59,7 @@ public class ServicesClient extends BaseClient {
     }
 
     public Service get(String id) throws Exception {
-        ClientResponse response = this.performRequest("/services/" + id, null, new HttpGet(), true, Session.class);
+        ClientResponse response = this.performRequest("/services/" + id, null, new HttpGet(), true, Service.class);
 
         return (Service)response.getBody();
     }
