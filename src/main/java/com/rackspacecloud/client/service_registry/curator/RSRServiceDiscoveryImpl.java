@@ -111,9 +111,13 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         List<Service> services = null;
         
         do {
+            // todo: it would be better to do:
+            // services = client.getServicesClient().list(options, typeTag);
+            // but there are some validation problems (the tag is allowed to be written, but not queried on).
             services = client.getServicesClient().list(options);
             for (Service service : services) {
                 options = options.withMarker(service.getId());
+                // this conditional can be removed when the above operation works.
                 if (!service.getTags().contains(typeTag)) {
                     continue;
                 }
