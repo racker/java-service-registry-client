@@ -216,7 +216,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
             map.put(URI_SPEC, service.getUriSpec().build());
         
         // what else?
-        for (Field f : getMetaFields(service.getPayload().getClass())) {
+        for (Field f : Utils.getMetaFields(service.getPayload().getClass())) {
             try {
                 f.setAccessible(true);
                 map.put(f.getName(), f.get(service.getPayload()).toString());
@@ -226,24 +226,6 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         }
         
         return map;
-    }
-    
-    private static Collection<Field> getMetaFields(Class cls) {
-        List<Field> allFields = new ArrayList<Field>();
-        List<Field> metaFields = new ArrayList<Field>();
-        for (Field f : cls.getDeclaredFields())
-            allFields.add(f);
-        for (Field f : cls.getFields())
-            allFields.add(f);
-        for (Field f : allFields) {
-            for (Annotation a : f.getAnnotations()) {
-                if (a.annotationType().equals(Meta.class)) {
-                    metaFields.add(f);
-                }
-            }
-        }
-        return metaFields;
-        
     }
     
     private class CuratorHeartbeatEventListener extends HeartbeatEventListener {   
