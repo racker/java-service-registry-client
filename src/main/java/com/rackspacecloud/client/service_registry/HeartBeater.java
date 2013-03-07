@@ -23,6 +23,7 @@ import com.rackspacecloud.client.service_registry.events.client.HeartbeatAckEven
 import com.rackspacecloud.client.service_registry.events.client.HeartbeatErrorEvent;
 import com.rackspacecloud.client.service_registry.events.client.HeartbeatStoppedEvent;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
+import org.apache.http.Header;
 import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,9 @@ public class HeartBeater extends BaseClient {
                 lastHttpStatus = response.getStatusCode();
                 nextToken = ((HeartbeatToken)response.getBody()).getToken();
                 if (lastHttpStatus != 200) {
-                    logger.debug(String.format("Heartbeat response was %d for session %s with txn %s", lastHttpStatus, this.sessionId, response.getHeader("x-response-id")[0]));
+                    Header[] headers = response.getHeader("x-response-id");
+                    String responseId = (headers == null || headers.length == 0) ? "unknown" : headers[0].getValue();
+                    logger.debug(String.format("Heartbeat response was %d for session %s with txn %s", lastHttpStatus, this.sessionId, responseId));
                     // heartbeat again instantly or exit out of the loop because a 404 will yield a null token.
                     continue;
                 }
