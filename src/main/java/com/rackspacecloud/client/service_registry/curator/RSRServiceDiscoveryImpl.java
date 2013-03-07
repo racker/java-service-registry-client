@@ -108,7 +108,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
     public Collection<String> queryForNames() throws Exception {
         Set<String> names = new HashSet<String>();
         PaginationOptions options = new PaginationOptions(100, null);
-        List<Service> services = null;
+        List<Service> services = null; // todo: use a set to avoid duplicates.
         
         do {
             // todo: it would be better to do:
@@ -134,7 +134,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
     public Collection<ServiceInstance<T>> queryForInstances(String name) throws Exception {
         List<ServiceInstance<T>> serviceInstances = new ArrayList<ServiceInstance<T>>();
         PaginationOptions options = new PaginationOptions(100, null);
-        List<Service> services = null;
+        List<Service> services = null; // todo: use a set to avoid duplicates.
         do {
             services = client.getServicesClient().list(options);
             for (Service service : services) {
