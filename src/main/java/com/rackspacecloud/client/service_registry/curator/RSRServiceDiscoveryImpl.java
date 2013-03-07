@@ -105,6 +105,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         // todo: whither 'name'?
     }
 
+    /** return all distinct names registered by this discovery type. */
     public Collection<String> queryForNames() throws Exception {
         Set<String> names = new HashSet<String>();
         PaginationOptions options = new PaginationOptions(100, null);
@@ -131,6 +132,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         return names;
     }
 
+    /** return all instances registered to this particular name for this discovery type */
     public Collection<ServiceInstance<T>> queryForInstances(String name) throws Exception {
         List<ServiceInstance<T>> serviceInstances = new ArrayList<ServiceInstance<T>>();
         PaginationOptions options = new PaginationOptions(100, null);
