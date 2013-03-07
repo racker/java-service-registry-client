@@ -182,6 +182,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         return (ServiceInstance<T>) convert.invoke(typeClass, service);
     }
     
+    // side-effect: creates session if it doesn't exist.
     private synchronized Session getSession() throws Exception {
         if (this.session == null) {
             Map<String, String> sessionMeta = new HashMap<String, String>();
