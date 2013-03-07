@@ -164,10 +164,11 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
     }
 
     public void close() throws IOException {
-        if (this.session != null && this.heartbeater != null) {
+        if (this.heartbeater != null) {
             this.heartbeater.removeEventListener(this.heartbeatEventListener);
             this.heartbeater.stop();
         }
+        this.session = null;
     }
     
     //
