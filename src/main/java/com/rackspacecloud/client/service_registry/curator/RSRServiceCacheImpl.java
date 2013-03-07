@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.netflix.curator.framework.listen.ListenerContainer;
 import com.netflix.curator.x.discovery.ServiceCache;
-import com.netflix.curator.x.discovery.ServiceDiscovery;
 import com.netflix.curator.x.discovery.ServiceInstance;
 import com.netflix.curator.x.discovery.details.ServiceCacheListener;
 import com.rackspacecloud.client.service_registry.PaginationOptions;
@@ -44,7 +43,7 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     public List<ServiceInstance<T>> getInstances() {
         return Collections.unmodifiableList(Lists.newArrayList(instances.values()));
     }
-
+    
     public synchronized void start() throws Exception {
         if (eventPoller != null) return;
         shouldStopPolling = false;
@@ -52,51 +51,8 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
         eventPoller = new Thread("Event poller for " + discovery.getClient()) {
             @Override
             public void run() {
-                PaginationOptions options = new PaginationOptions(100, null);
                 while (!shouldStopPolling) {
-                    List<BaseEvent> events = null;
-                    do {
-                        if (shouldStopPolling) break;
-                        try {
-                            // get events from server, filter the ones we are interested in.
-                            events = discovery.getClient().getEventsClient().list(options);
-                            for (BaseEvent e : events) {
-                                if (isPertinent(e)) {
-                                    // ideally, the dispatch happens on a separate thread.
-                                    try {
-                                        // listeners should do work.
-                                        listenerContainer.forEach(new Function<ServiceCacheListener, Void>() {
-                                            public Void apply(@Nullable ServiceCacheListener serviceCacheListener) {
-                                                if (serviceCacheListener == null) return null;
-                                                serviceCacheListener.cacheChanged();
-                                                return null;
-                                            }
-                                        });
-                                        
-                                        // make sure the local collection is maintained.
-                                        final AbstractServiceEvent ee = (AbstractServiceEvent)e;
-                                        if (name == null || (name.equals(ee.getService().getMetadata().get("name")))) {
-                                            try {
-                                                if (ee instanceof ServiceJoinEvent) {
-                                                    instances.put(ee.getService().getId(), discovery.convert(ee.getService()));
-                                                } else if (ee instanceof ServiceTimeoutEvent) {
-                                                    instances.remove(ee.getService().getId());
-                                                }
-                                            } catch (Exception fromConverter) {
-                                                // todo: log it.
-                                            }
-                                        }
-                                    } catch (Throwable th) {
-                                        // bad listener! todo: log only.
-                                    }
-                                }
-                                options = options.withMarker(e.getId());
-                            }                            
-                        } catch (Exception ex) {
-                            // todo: just log it.
-                            events = null;
-                        }
-                    } while (events != null && events.size() > 0);
+                    pollAndProcessEvents();
                 }
                 eventPoller = null;
                 shouldStopPolling = false;
@@ -151,5 +107,61 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     
     private boolean isPertinent(BaseEvent e) {
         return e instanceof AbstractServiceEvent && ((AbstractServiceEvent)e).getService().getTags().contains(discovery.getType());
+    }
+    
+    private String processEvents(List<BaseEvent> events) {
+        String lastId = null;
+        for (BaseEvent e : events) {
+            lastId = e.getId();
+            if (!isPertinent(e)) {
+                continue;
+            }
+            // ideally, the dispatch happens on a separate thread.
+            try {
+                // listeners should do work.
+                listenerContainer.forEach(new Function<ServiceCacheListener, Void>() {
+                    public Void apply(@Nullable ServiceCacheListener serviceCacheListener) {
+                        if (serviceCacheListener == null) return null;
+                        serviceCacheListener.cacheChanged();
+                        return null;
+                    }
+                });
+                
+                // make sure the local collection is maintained.
+                final AbstractServiceEvent ee = (AbstractServiceEvent)e;
+                if (name == null || (name.equals(ee.getService().getMetadata().get("name")))) {
+                    try {
+                        if (ee instanceof ServiceJoinEvent) {
+                            instances.put(ee.getService().getId(), discovery.convert(ee.getService()));
+                        } else if (ee instanceof ServiceTimeoutEvent) {
+                            instances.remove(ee.getService().getId());
+                        }
+                    } catch (Exception fromConverter) {
+                        // todo: log it.
+                    }
+                }
+            } catch (Throwable th) {
+                // bad listener! todo: log only.
+            }
+        }
+        return lastId;
+    }
+    
+    // pull a page of events, process that page, pull the next page, etc.
+    private void pollAndProcessEvents() {
+        PaginationOptions options = new PaginationOptions(100, null);
+        List<BaseEvent> events = null;
+        do {
+            if (shouldStopPolling) break;
+            try {
+                // get events from server, filter the ones we are interested in.
+                events = discovery.getClient().getEventsClient().list(options);
+                String lastEventId = processEvents(events);
+                options = options.withMarker(lastEventId);
+            } catch (Exception ex) {
+                // todo: just log it.
+                events = null;
+            }
+        } while (events != null && events.size() > 0);
     }
 }
