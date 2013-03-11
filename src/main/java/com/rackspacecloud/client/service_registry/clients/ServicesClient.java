@@ -25,7 +25,6 @@ import com.rackspacecloud.client.service_registry.ServiceCreateResponse;
 import com.rackspacecloud.client.service_registry.containers.ServicesContainer;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
 import com.rackspacecloud.client.service_registry.objects.Service;
-import com.rackspacecloud.client.service_registry.objects.Session;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
