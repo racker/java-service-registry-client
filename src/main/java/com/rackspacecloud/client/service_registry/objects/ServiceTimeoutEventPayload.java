@@ -17,11 +17,15 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
+public class ServiceTimeoutEventPayload extends EventPayload {
+    private Service service;
 
-public class EventPayload {
+    public ServiceTimeoutEventPayload(Service service) {
+        this.service = service;
+    }
+
+    public Service getService() {
+        return service;
+    }
 }

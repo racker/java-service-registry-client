@@ -28,7 +28,8 @@ public class Session  {
     private Integer heartbeatTimeout;
     private Map<String, String> metadata;
 
-    public Session(String id, Integer heartbeatTimeout, Integer lastSeen, Map<String, String> metadata) {
+    public Session(String id, Integer heartbeatTimeout, Integer lastSeen,
+                   Map<String, String> metadata) {
         this.id = id;
         this.heartbeatTimeout = heartbeatTimeout;
         this.lastSeen = lastSeen;

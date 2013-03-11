@@ -27,14 +27,23 @@ import java.util.Map;
 public class Service {
     private String id;
 
-    @SerializedName("session_id")
-    private String sessionId;
+    @SerializedName("heartbeat_timeout")
+    private Integer heartbeatTimeout;
+    private Integer lastSeen = null;
+
     private List<String> tags = new ArrayList<String>();
     private Map<String, String> metadata = new HashMap<String, String>();
 
-    public Service(String id, String sessionId, List<String> tags, Map<String, String> metadata) {
+    public Service(String id, Integer heartbeatTimeout, List<String> tags,
+                   Map<String, String> metadata) {
+        this(id, heartbeatTimeout, null, tags, metadata);
+    }
+
+    public Service(String id, Integer heartbeatTimeout, Integer lastSeen,
+                   List<String> tags, Map<String, String> metadata) {
         this.id = id;
-        this.sessionId = sessionId;
+        this.heartbeatTimeout = heartbeatTimeout;
+        this.lastSeen = lastSeen;
         this.tags = tags;
         this.metadata = metadata;
     }
@@ -43,8 +52,12 @@ public class Service {
         return id;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public Integer getHeartbeatTimeout() {
+        return heartbeatTimeout;
+    }
+
+    private Integer getLastSeen() {
+        return lastSeen;
     }
 
     public List<String> getTags() {

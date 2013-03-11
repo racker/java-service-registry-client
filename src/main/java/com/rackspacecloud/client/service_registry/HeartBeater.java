@@ -35,7 +35,7 @@ import java.lang.String;
 public class HeartBeater extends BaseClient {
     private static final long INTERVAL_PROACTIVE_MILLIS = 4000L;
     
-    private final String sessionId;
+    private final String serviceId;
     private final Integer heartbeatTimeoutSecs;
     private final long heartbeatIntervalMillis;
     private final String initialToken;
@@ -45,9 +45,9 @@ public class HeartBeater extends BaseClient {
     
     private static final Logger logger = LoggerFactory.getLogger(HeartBeater.class);
 
-    public HeartBeater(AuthClient authClient, String sessionId, String initialToken, int timeout) {
+    public HeartBeater(AuthClient authClient, String serviceId, String initialToken, int timeout) {
         super(authClient);
-        this.sessionId = sessionId;
+        this.serviceId = serviceId;
         this.initialToken = initialToken;
         this.heartbeatTimeoutSecs = timeout;
         this.heartbeatIntervalMillis = (long)(timeout * 1000L * (timeout < 15 ? 0.6d : 0.9d));
@@ -55,7 +55,7 @@ public class HeartBeater extends BaseClient {
 
     private void runInThread() {
         ClientResponse response;
-        String path = String.format("/sessions/%s/heartbeat", this.sessionId);
+        String path = String.format("/services/%s/heartbeat", this.serviceId);
         int lastHttpStatus = 0;
         boolean isError = false;
         String nextToken = initialToken;
