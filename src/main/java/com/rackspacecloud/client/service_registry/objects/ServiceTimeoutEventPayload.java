@@ -15,16 +15,17 @@
  *
  */
 
-package com.rackspacecloud.client.service_registry.containers;
+package com.rackspacecloud.client.service_registry.objects;
 
-import com.rackspacecloud.client.service_registry.objects.Session;
 
-import java.util.List;
+public class ServiceTimeoutEventPayload extends EventPayload {
+    private Service service;
 
-public class SessionsContainer extends Container {
-    private List<Session> values;
+    public ServiceTimeoutEventPayload(Service service) {
+        this.service = service;
+    }
 
-    public List<Session> getValues() {
-        return values;
+    public Service getService() {
+        return service;
     }
 }

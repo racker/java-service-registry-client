@@ -17,21 +17,21 @@
 
 package com.rackspacecloud.client.service_registry;
 
-import com.rackspacecloud.client.service_registry.objects.Session;
+import com.rackspacecloud.client.service_registry.objects.Service;
 
-public class SessionCreateResponse {
-    private final Session session;
+public class ServiceCreateResponse {
+    private final Service service;
     private final String token;
     private final HeartBeater heartbeater;
 
-    public SessionCreateResponse(HeartBeater heartbeater, Session session, String token) {
-        this.session = session;
+    public ServiceCreateResponse(HeartBeater heartbeater, Service service, String token) {
+        this.service = service;
         this.token = token;
         this.heartbeater = heartbeater;
     }
 
-    public Session getSession() {
-        return session;
+    public Service getService() {
+        return service;
     }
 
     public String getToken() {
