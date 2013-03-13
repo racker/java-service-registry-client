@@ -34,7 +34,8 @@ import java.util.Map;
 public class EventsClient extends BaseClient {
     private static final List VALID_EVENT_TYPES = new ArrayList<String>(Arrays.asList(new String[]{
             "service.join",
-            "services.timeout",
+            "service.timeout",
+            "service.remove",
             "configuration_value.update",
             "configuration_value.remove"}));
 
@@ -82,13 +83,17 @@ public class EventsClient extends BaseClient {
                 event = new ServiceJoinEvent(eventPayload.getService());
                 result.add(event);
             }
-            else if (type.compareTo("services.timeout") == 0) {
-                ServicesTimeoutEventPayload eventPayload = ((ServicesTimeoutEventPayload)payload);
+            else if (type.compareTo("service.timeout") == 0) {
+                ServiceTimeoutEventPayload eventPayload = ((ServiceTimeoutEventPayload)payload);
 
-                for (Service service : eventPayload.getServices())  {
-                    event = new ServiceTimeoutEvent(service);
-                    result.add(event);
-                }
+                event = new ServiceTimeoutEvent(eventPayload.getService());
+                result.add(event);
+            }
+            else if (type.compareTo("service.remove") == 0) {
+                ServiceRemoveEventPayload eventPayload = ((ServiceRemoveEventPayload)payload);
+
+                event = new ServiceRemoveEvent(eventPayload.getService());
+                result.add(event);
             }
             else if (type.compareTo("configuration_value.update") == 0) {
                 ConfigurationValueUpdatedEventPayload eventPayload = ((ConfigurationValueUpdatedEventPayload)payload);

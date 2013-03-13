@@ -17,16 +17,15 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-import java.util.List;
 
-public class ServicesTimeoutEventPayload extends EventPayload {
-    private List<Service> services;
+public class ServiceRemoveEventPayload extends EventPayload {
+    private Service service;
 
-    public ServicesTimeoutEventPayload(List<Service> services) {
-        this.services = services;
+    public ServiceRemoveEventPayload(Service service) {
+        this.service = service;
     }
 
-    public List<Service> getServices() {
-        return services;
+    public Service getService() {
+        return service;
     }
 }

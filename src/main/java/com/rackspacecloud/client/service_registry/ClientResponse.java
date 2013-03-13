@@ -20,7 +20,7 @@ package com.rackspacecloud.client.service_registry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rackspacecloud.client.service_registry.exceptions.ValidationException;
-import com.rackspacecloud.client.service_registry.objects.EventPayload;
+import com.rackspacecloud.client.service_registry.objects.Event;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -64,8 +64,7 @@ public class ClientResponse {
 
             if (this.parseAsJson && this.responseType != null) {
                 GsonBuilder builder = new GsonBuilder();
-                Gson gson = builder.registerTypeAdapter(EventPayload.class,
-                                                        new EventPayload()).create();
+                Gson gson = builder.registerTypeAdapter(Event.class, new Event()).create();
                 data = gson.fromJson(data.toString(), this.responseType);
             }
         }
