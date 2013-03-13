@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseClient {
     public static final String PRODUCTION_URL = "https://dfw.registry.api.rackspacecloud.com/v1.0";
-    public static final String STAGING_URL = "https://csr-staging.rax.io/v1.0";
     
     private static Logger logger = LoggerFactory.getLogger(BaseClient.class);
     private static final int MAX_401_RETRIES = 1;
