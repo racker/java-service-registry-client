@@ -56,18 +56,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class BaseClient {
+    public static final String PRODUCTION_URL = "https://dfw.registry.api.rackspacecloud.com/v1.0";
+    
     private static Logger logger = LoggerFactory.getLogger(BaseClient.class);
-    private static final String DEFAULT_URL = "https://dfw.registry.api.rackspacecloud.com/v1.0";
     private static final int MAX_401_RETRIES = 1;
 
-    private final String url = BaseClient.DEFAULT_URL;
+    private final String apiUrl;
 
     private final AuthClient authClient;
     private final HttpClient client;
     
     private final Collection<ClientEventListener> listeners;
 
-    public BaseClient(AuthClient authClient) {
+    public BaseClient(AuthClient authClient, String apiUrl) {
         this(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
@@ -85,13 +86,14 @@ public abstract class BaseClient {
                         new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
                 return new ThreadSafeClientConnManager(createHttpParams(), schemeRegistry);
             }
-        }, authClient);
+        }, authClient, apiUrl);
     }
 
-    public BaseClient(HttpClient client, AuthClient authClient) throws IllegalArgumentException {
+    public BaseClient(HttpClient client, AuthClient authClient, String apiUrl) throws IllegalArgumentException {
         this.client = client;
         this.authClient = authClient;
         listeners = new ArrayList<ClientEventListener>();
+        this.apiUrl = apiUrl;
     }
     
     public void addEventListener(ClientEventListener listener) {
@@ -151,7 +153,7 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        String url = (this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path);
+        String url = (this.apiUrl + "/" + this.authClient.getAuthToken().getTenant().get("id") + path);
 
         if (params != null) {
             url += "?" + URLEncodedUtils.format(params, "UTF-8");
@@ -183,7 +185,7 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        method.setURI(new URI(this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path));
+        method.setURI(new URI(this.apiUrl + "/" + this.authClient.getAuthToken().getTenant().get("id") + path));
         method.setHeader("User-Agent", Client.VERSION);
         method.setHeader("X-Auth-Token", this.authClient.getAuthToken().getId());
 
@@ -208,5 +210,9 @@ public abstract class BaseClient {
         }
 
         return new ClientResponse(response, parseAsJson, responseType);
+    }
+    
+    protected String getApiUrl() {
+        return this.apiUrl;
     }
 }
