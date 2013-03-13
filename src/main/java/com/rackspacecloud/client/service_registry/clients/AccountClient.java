@@ -22,8 +22,8 @@ import com.rackspacecloud.client.service_registry.objects.Limits;
 import org.apache.http.client.methods.HttpGet;
 
 public class AccountClient extends BaseClient {
-    public AccountClient(AuthClient authClient, String url) {
-        super(authClient, url);
+    public AccountClient(AuthClient authClient, String apiUrl) {
+        super(authClient, apiUrl);
     }
 
     public Limits getLimits() throws Exception {

@@ -39,8 +39,8 @@ public class EventsClient extends BaseClient {
             "configuration_value.update",
             "configuration_value.remove"}));
 
-    public EventsClient(AuthClient authClient, String url) {
-        super(authClient, url);
+    public EventsClient(AuthClient authClient, String apiUrl) {
+        super(authClient, apiUrl);
     }
 
     public List<BaseEvent> list(PaginationOptions paginationOptions) throws Exception {

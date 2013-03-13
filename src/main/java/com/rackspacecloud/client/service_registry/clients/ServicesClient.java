@@ -40,8 +40,8 @@ import java.util.Map;
 public class ServicesClient extends BaseClient {
     private final AuthClient authClient;
 
-    public ServicesClient(AuthClient authClient, String url) {
-        super(authClient, url);
+    public ServicesClient(AuthClient authClient, String apiUrl) {
+        super(authClient, apiUrl);
         this.authClient = authClient;
     }
 
@@ -74,7 +74,7 @@ public class ServicesClient extends BaseClient {
         ClientResponse response = this.performRequestWithPayload("/services", null, new HttpPost(), service, true, HeartbeatToken.class);
 
         HeartbeatToken hbt = (HeartbeatToken)response.getBody();
-        HeartBeater heartBeater = new HeartBeater(this.authClient, id, hbt.getToken(), service.getHeartbeatTimeout(), this.getEndpointURL());
+        HeartBeater heartBeater = new HeartBeater(this.authClient, id, hbt.getToken(), service.getHeartbeatTimeout(), this.getApiUrl());
 
         return new ServiceCreateResponse(heartBeater, service, hbt.getToken());
     }

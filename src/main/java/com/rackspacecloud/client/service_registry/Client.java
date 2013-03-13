@@ -41,7 +41,7 @@ public class Client {
         this(username, apiKey, region, BaseClient.PRODUCTION_URL);
     }
     
-    public Client(String username, String apiKey, String region, String url) {
+    public Client(String username, String apiKey, String region, String apiUrl) {
         AuthClient authClient = new AuthClient(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
@@ -61,10 +61,10 @@ public class Client {
             }
         }, username, apiKey, region);
 
-        this.services = new ServicesClient(authClient, url);
-        this.configuration = new ConfigurationClient(authClient, url);
-        this.events = new EventsClient(authClient, url);
-        this.account = new AccountClient(authClient, url);
+        this.services = new ServicesClient(authClient, apiUrl);
+        this.configuration = new ConfigurationClient(authClient, apiUrl);
+        this.events = new EventsClient(authClient, apiUrl);
+        this.account = new AccountClient(authClient, apiUrl);
     }
 
     public ServicesClient getServicesClient() { return this.services; }

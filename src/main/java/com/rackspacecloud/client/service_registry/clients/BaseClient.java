@@ -61,14 +61,14 @@ public abstract class BaseClient {
     private static Logger logger = LoggerFactory.getLogger(BaseClient.class);
     private static final int MAX_401_RETRIES = 1;
 
-    private final String url;
+    private final String apiUrl;
 
     private final AuthClient authClient;
     private final HttpClient client;
     
     private final Collection<ClientEventListener> listeners;
 
-    public BaseClient(AuthClient authClient, String url) {
+    public BaseClient(AuthClient authClient, String apiUrl) {
         this(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
@@ -86,14 +86,14 @@ public abstract class BaseClient {
                         new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
                 return new ThreadSafeClientConnManager(createHttpParams(), schemeRegistry);
             }
-        }, authClient, url);
+        }, authClient, apiUrl);
     }
 
-    public BaseClient(HttpClient client, AuthClient authClient, String url) throws IllegalArgumentException {
+    public BaseClient(HttpClient client, AuthClient authClient, String apiUrl) throws IllegalArgumentException {
         this.client = client;
         this.authClient = authClient;
         listeners = new ArrayList<ClientEventListener>();
-        this.url = url;
+        this.apiUrl = apiUrl;
     }
     
     public void addEventListener(ClientEventListener listener) {
@@ -153,7 +153,7 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        String url = (this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path);
+        String url = (this.apiUrl + "/" + this.authClient.getAuthToken().getTenant().get("id") + path);
 
         if (params != null) {
             url += "?" + URLEncodedUtils.format(params, "UTF-8");
@@ -185,7 +185,7 @@ public abstract class BaseClient {
 
         this.authClient.refreshToken(reAuthenticate);
 
-        method.setURI(new URI(this.url + "/" + this.authClient.getAuthToken().getTenant().get("id") + path));
+        method.setURI(new URI(this.apiUrl + "/" + this.authClient.getAuthToken().getTenant().get("id") + path));
         method.setHeader("User-Agent", Client.VERSION);
         method.setHeader("X-Auth-Token", this.authClient.getAuthToken().getId());
 
@@ -212,7 +212,7 @@ public abstract class BaseClient {
         return new ClientResponse(response, parseAsJson, responseType);
     }
     
-    protected String getEndpointURL() {
-        return this.url;
+    protected String getApiUrl() {
+        return this.apiUrl;
     }
 }
