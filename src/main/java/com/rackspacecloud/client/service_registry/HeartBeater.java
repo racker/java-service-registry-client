@@ -45,8 +45,8 @@ public class HeartBeater extends BaseClient {
     
     private static final Logger logger = LoggerFactory.getLogger(HeartBeater.class);
 
-    public HeartBeater(AuthClient authClient, String serviceId, String initialToken, int timeout) {
-        super(authClient);
+    public HeartBeater(AuthClient authClient, String serviceId, String initialToken, int timeout, String url) {
+        super(authClient, url);
         this.serviceId = serviceId;
         this.initialToken = initialToken;
         this.heartbeatTimeoutSecs = timeout;
