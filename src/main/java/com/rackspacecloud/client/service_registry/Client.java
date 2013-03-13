@@ -37,6 +37,10 @@ public class Client {
     // todo: there is no way this is going to say in sync.
     public static final String VERSION = "java-service-registry-client/v1.0.0-SNAPSHOT";
 
+    public Client(String username, String apiKey, String region) {
+        this(username, apiKey, region, BaseClient.PRODUCTION_URL);
+    }
+    
     public Client(String username, String apiKey, String region, String url) {
         AuthClient authClient = new AuthClient(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
