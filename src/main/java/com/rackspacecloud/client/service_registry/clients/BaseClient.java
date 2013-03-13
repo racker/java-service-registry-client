@@ -56,18 +56,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class BaseClient {
+    public static final String PRODUCTION_URL = "https://dfw.registry.api.rackspacecloud.com/v1.0";
+    public static final String STAGING_URL = "https://csr-staging.rax.io/v1.0";
+    
     private static Logger logger = LoggerFactory.getLogger(BaseClient.class);
-    private static final String DEFAULT_URL = "https://dfw.registry.api.rackspacecloud.com/v1.0";
     private static final int MAX_401_RETRIES = 1;
 
-    private final String url = BaseClient.DEFAULT_URL;
+    private final String url;
 
     private final AuthClient authClient;
     private final HttpClient client;
     
     private final Collection<ClientEventListener> listeners;
 
-    public BaseClient(AuthClient authClient) {
+    public BaseClient(AuthClient authClient, String url) {
         this(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
@@ -85,13 +87,14 @@ public abstract class BaseClient {
                         new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
                 return new ThreadSafeClientConnManager(createHttpParams(), schemeRegistry);
             }
-        }, authClient);
+        }, authClient, url);
     }
 
-    public BaseClient(HttpClient client, AuthClient authClient) throws IllegalArgumentException {
+    public BaseClient(HttpClient client, AuthClient authClient, String url) throws IllegalArgumentException {
         this.client = client;
         this.authClient = authClient;
         listeners = new ArrayList<ClientEventListener>();
+        this.url = url;
     }
     
     public void addEventListener(ClientEventListener listener) {
@@ -208,5 +211,9 @@ public abstract class BaseClient {
         }
 
         return new ClientResponse(response, parseAsJson, responseType);
+    }
+    
+    protected String getEndpointURL() {
+        return this.url;
     }
 }

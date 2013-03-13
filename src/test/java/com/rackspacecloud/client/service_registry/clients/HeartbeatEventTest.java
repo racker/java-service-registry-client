@@ -25,7 +25,7 @@ public class HeartbeatEventTest {
     
     @Before
     public void setUpClient() {
-        client = new BaseClient(null) {
+        client = new BaseClient(null, null) {
         };
     }
     
@@ -133,7 +133,7 @@ public class HeartbeatEventTest {
                 }
             }
         };
-        HeartBeater hbClient = new HeartBeater(null, null, null, 1000);
+        HeartBeater hbClient = new HeartBeater(null, null, null, 1000, null);
         ClientResponse ok200 = new ClientResponse(new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, 200, "OK")));
         hbClient.addEventListener(listener);
         hbClient.emit(new ClientEvent(hbClient, 201));

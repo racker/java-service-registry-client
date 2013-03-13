@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ConfigurationClient extends BaseClient {
-    public ConfigurationClient(AuthClient authClient) {
-        super(authClient);
+    public ConfigurationClient(AuthClient authClient, String url) {
+        super(authClient, url);
     }
 
     public List<ConfigurationValue> list(PaginationOptions paginationOptions) throws Exception {

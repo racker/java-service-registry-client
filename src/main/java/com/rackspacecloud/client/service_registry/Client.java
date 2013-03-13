@@ -34,9 +34,10 @@ public class Client {
     private final EventsClient events;
     private final AccountClient account;
 
+    // todo: there is no way this is going to say in sync.
     public static final String VERSION = "java-service-registry-client/v1.0.0-SNAPSHOT";
 
-    public Client(String username, String apiKey, String region) {
+    public Client(String username, String apiKey, String region, String url) {
         AuthClient authClient = new AuthClient(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
@@ -56,10 +57,10 @@ public class Client {
             }
         }, username, apiKey, region);
 
-        this.services = new ServicesClient(authClient);
-        this.configuration = new ConfigurationClient(authClient);
-        this.events = new EventsClient(authClient);
-        this.account = new AccountClient(authClient);
+        this.services = new ServicesClient(authClient, url);
+        this.configuration = new ConfigurationClient(authClient, url);
+        this.events = new EventsClient(authClient, url);
+        this.account = new AccountClient(authClient, url);
     }
 
     public ServicesClient getServicesClient() { return this.services; }
