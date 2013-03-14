@@ -29,16 +29,19 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 public class Client {
-    private final SessionsClient sessions;
     private final ServicesClient services;
     private final ConfigurationClient configuration;
-    private final ViewsClient views;
     private final EventsClient events;
     private final AccountClient account;
 
+    // todo: there is no way this is going to say in sync.
     public static final String VERSION = "java-service-registry-client/v1.0.0-SNAPSHOT";
 
     public Client(String username, String apiKey, String region) {
+        this(username, apiKey, region, BaseClient.PRODUCTION_URL);
+    }
+    
+    public Client(String username, String apiKey, String region, String apiUrl) {
         AuthClient authClient = new AuthClient(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
@@ -58,18 +61,14 @@ public class Client {
             }
         }, username, apiKey, region);
 
-        this.sessions = new SessionsClient(authClient);
-        this.services = new ServicesClient(authClient);
-        this.configuration = new ConfigurationClient(authClient);
-        this.views = new ViewsClient(authClient);
-        this.events = new EventsClient(authClient);
-        this.account = new AccountClient(authClient);
+        this.services = new ServicesClient(authClient, apiUrl);
+        this.configuration = new ConfigurationClient(authClient, apiUrl);
+        this.events = new EventsClient(authClient, apiUrl);
+        this.account = new AccountClient(authClient, apiUrl);
     }
-    
-    public SessionsClient getSessionsClient() { return this.sessions; }
+
     public ServicesClient getServicesClient() { return this.services; }
     public ConfigurationClient getConfigurationClient() { return this.configuration; }
-    public ViewsClient getViewsClient() { return this.views; }
     public EventsClient getEventsClient () { return this.events; }
     public AccountClient getAccountClient() { return this.account; }
 }

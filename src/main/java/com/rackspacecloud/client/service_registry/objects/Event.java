@@ -17,14 +17,22 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Event {
+public class Event implements
+        InstanceCreator<Event>,
+        JsonDeserializer<Event> {
     private String id;
     private Long timestamp;
     private String type;
     private EventPayload payload;
+
+    public Event() {}
 
     public Event(String id, Long timestamp, String type, EventPayload payload) {
         this.id = id;
@@ -47,5 +55,71 @@ public class Event {
 
     public EventPayload getPayload() {
         return payload;
+    }
+
+    @Override
+    public Event createInstance(Type type) {
+        return this;
+    }
+
+    @Override
+    public Event deserialize(JsonElement json, Type typeOfT,
+                             JsonDeserializationContext context) {
+        JsonObject jsonObject = json.getAsJsonObject();
+
+        String id = jsonObject.get("id").getAsString();
+        String eventType = jsonObject.get("type").getAsString();
+        JsonObject payloadJsonObject = jsonObject.get("payload").getAsJsonObject();
+        Long timestamp = jsonObject.get("timestamp").getAsLong();
+
+        System.out.print("===");
+        System.out.println(eventType);
+
+        EventPayload payload = null;
+
+        if (eventType.equals("configuration_value.update") ||
+            eventType.equals("configuration_value.remove")) {
+            String configurationId =  payloadJsonObject.get("configuration_value_id").getAsString();
+            String oldValue, newValue;
+
+            if (payloadJsonObject.get("old_value").isJsonNull()) {
+                oldValue = null;
+            }
+            else {
+                oldValue = payloadJsonObject.get("old_value").getAsString();
+            }
+
+            if (payloadJsonObject.has("new_value")) {
+                newValue = payloadJsonObject.get("new_value").getAsString();
+
+                payload =  new ConfigurationValueUpdatedEventPayload(configurationId, oldValue, newValue);
+            }
+            else {
+                payload =  new ConfigurationValueRemovedEventPayload(configurationId, oldValue);
+            }
+
+            System.out.println(payload);
+
+        }
+        else if (eventType.equals("service.join") || eventType.equals("service.timeout") ||
+                 eventType.equals("service.remove")) {
+            Service service = new Gson().fromJson(jsonObject,
+                                                  new TypeToken<Service>() {}.getType());
+
+            if (eventType.equals("service.join")) {
+                payload = new ServiceJoinEventPayload(service);
+            }
+            else if (eventType.equals("service.timeout")) {
+                payload = new ServiceTimeoutEventPayload(service);
+            }
+            else if (eventType.equals("service.remove")) {
+                payload = new ServiceRemoveEventPayload(service);
+            }
+        }
+        else {
+            throw new Error("Unrecognized event type: " + eventType);
+        }
+
+        return new Event(id, timestamp, eventType, payload);
     }
 }
