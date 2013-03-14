@@ -74,7 +74,7 @@ public class HeartBeater extends BaseClient {
                 if (lastHttpStatus != 200) {
                     Header[] headers = response.getHeader("x-response-id");
                     String responseId = (headers == null || headers.length == 0) ? "unknown" : headers[0].getValue();
-                    logger.debug(String.format("Heartbeat response was %d for session %s with txn %s", lastHttpStatus, this.sessionId, responseId));
+                    logger.debug(String.format("Heartbeat response was %d for session %s with txn %s", lastHttpStatus, this.serviceId, responseId));
                     // heartbeat again instantly or exit out of the loop because a 404 will yield a null token.
                     continue;
                 }

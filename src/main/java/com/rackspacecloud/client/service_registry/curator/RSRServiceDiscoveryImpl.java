@@ -7,22 +7,11 @@ import com.netflix.curator.x.discovery.ServiceInstance;
 import com.netflix.curator.x.discovery.ServiceProviderBuilder;
 import com.netflix.curator.x.discovery.strategies.RoundRobinStrategy;
 import com.rackspacecloud.client.service_registry.Client;
-import com.rackspacecloud.client.service_registry.HeartBeater;
 import com.rackspacecloud.client.service_registry.PaginationOptions;
-import com.rackspacecloud.client.service_registry.SessionCreateResponse;
-import com.rackspacecloud.client.service_registry.events.client.ClientEvent;
-import com.rackspacecloud.client.service_registry.events.client.HeartbeatAckEvent;
-import com.rackspacecloud.client.service_registry.events.client.HeartbeatErrorEvent;
-import com.rackspacecloud.client.service_registry.events.client.HeartbeatEventListener;
-import com.rackspacecloud.client.service_registry.events.client.HeartbeatStoppedEvent;
 import com.rackspacecloud.client.service_registry.objects.Service;
-import com.rackspacecloud.client.service_registry.objects.Session;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,26 +22,13 @@ import java.util.MissingResourceException;
 import java.util.Set;
 
 public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
-    public static final String DISCOVERY = "discovery";
-    
-    private static final String NAME = "name";
-    private static final String ADDRESS = "address";
-    private static final String PORT = "port";
-    private static final String REG_TIME = "regtime";
-    private static final String SVC_TYPE = "svcType";
-    private static final String SSL_PORT = "sslPort";
-    private static final String URI_SPEC = "uriSpec";
     
     private final Client client;
     private final Class<T> typeClass;
     private final String typeTag;
     private final Method convert;
     
-    private volatile Session session;
-    private volatile HeartBeater heartbeater;
-    
-    private final HeartbeatEventListener heartbeatEventListener;
-    private final Map<String, ServiceInstance> services = new HashMap<String, ServiceInstance>(); // needs synchronized
+    private final Map<String, ServiceTracker<T>> services = new HashMap<String, ServiceTracker<T>>(); // needs synchronized
         
     public RSRServiceDiscoveryImpl(Client client, Class<T> type) {
         // deep validation has already been done.
@@ -69,34 +45,29 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         this.client = client;
         this.typeClass = type;
         this.typeTag = Utils.sanitizeTag(type.getName());
-        this.heartbeatEventListener = new CuratorHeartbeatEventListener();
     }
     public void start() throws Exception {
-        // create a session. keep in mind that session ids are ephemeral and may change frequently.
-        getSession();
+        // noop
     }
 
-    public void registerService(ServiceInstance<T> service) throws Exception {
-        List<String> tags = new ArrayList<String>();
-        tags.add(typeTag);
-        tags.add(service.getName());
-        tags.add("curator-x-discovery");
-        Service fsService = client.getServicesClient().create(
-                service.getId(), 
-                getSession().getId(), 
-                tags, 
-                getMetadata(service));
-        services.put(service.getId(), service);
+    public synchronized void registerService(ServiceInstance<T> service) throws Exception {
+        ServiceTracker<T> tracker = services.get(service.getId());
+        if (tracker == null) {
+            tracker = new ServiceTracker<T>(client, service, typeTag);
+            tracker.register();
+            services.put(service.getId(), tracker);
+        }
     }
 
     public void updateService(ServiceInstance<T> service) throws Exception {
+        // todo: consider the implications of this implementation. unregistration forces some heartbeat events
         unregisterService(service);
         registerService(service);
     }
 
     public void unregisterService(ServiceInstance<T> service) throws Exception {
         client.getServicesClient().delete(service.getId());
-        services.remove(service.getId());
+        services.remove(service.getId()).stop();
     }
 
     public ServiceCacheBuilder<T> serviceCacheBuilder() {
@@ -122,7 +93,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
                 if (!service.getTags().contains(typeTag)) {
                     continue;
                 }
-                String name = service.getMetadata().get(NAME);
+                String name = service.getMetadata().get(ServiceTracker.NAME);
                 if (!names.contains(name)) {
                     names.add(name);
                 }
@@ -140,7 +111,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         do {
             services = client.getServicesClient().list(options);
             for (Service service : services) {
-                if (service.getTags().contains(typeTag) && service.getMetadata().get(NAME).equals(name)) {
+                if (service.getTags().contains(typeTag) && service.getMetadata().get(ServiceTracker.NAME).equals(name)) {
                     // does the job of the serializer in the curator code (theirs is just a json marshaller anyway).
                     serviceInstances.add(convert(service));
                 }
@@ -163,12 +134,11 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
                 .threadFactory(ThreadUtils.newThreadFactory("RSRServiceProvider")); 
     }
 
-    public void close() throws IOException {
-        if (this.heartbeater != null) {
-            this.heartbeater.removeEventListener(this.heartbeatEventListener);
-            this.heartbeater.stop();
+    public synchronized void close() throws IOException {
+        for (ServiceTracker<T> tracker : services.values()) {
+            tracker.stop();
         }
-        this.session = null;
+        services.clear();
     }
     
     //
@@ -180,91 +150,5 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
     
     public ServiceInstance<T> convert(Service service) throws Exception {
         return (ServiceInstance<T>) convert.invoke(typeClass, service);
-    }
-    
-    // side-effect: creates session if it doesn't exist.
-    private synchronized Session getSession() throws Exception {
-        if (this.session == null) {
-            Map<String, String> sessionMeta = new HashMap<String, String>();
-            sessionMeta.put(DISCOVERY, typeTag);
-            SessionCreateResponse res = client.getSessionsClient().create(30, sessionMeta);
-            heartbeater = res.getHeartbeater();
-            heartbeater.addEventListener(this.heartbeatEventListener);
-            heartbeater.start();
-            this.session = res.getSession();
-        }
-        return session;
-    }
-    
-    private synchronized void registerAll() throws Exception {
-        for (ServiceInstance svc : services.values()) {
-            registerService(svc);
-        }
-    }
-    
-    private static Map<String, String> getMetadata(ServiceInstance service) {
-        Map<String, String> map = new HashMap<String, String>();
-        
-        map.put(NAME, service.getName());
-        map.put(ADDRESS, service.getAddress());
-        if (service.getPort() != null)
-            map.put(PORT, service.getPort().toString());
-        map.put(REG_TIME, Long.toString(service.getRegistrationTimeUTC()));
-        map.put(SVC_TYPE, service.getServiceType().name());
-        if (service.getSslPort() != null)
-            map.put(SSL_PORT, service.getSslPort().toString());
-        if (service.getUriSpec() != null)
-            map.put(URI_SPEC, service.getUriSpec().build());
-        
-        // what else?
-        for (Field f : Utils.getMetaFields(service.getPayload().getClass())) {
-            try {
-                f.setAccessible(true);
-                map.put(f.getName(), f.get(service.getPayload()).toString());
-            } catch (Exception ex) {
-                // todo: log
-            }
-        }
-        
-        return map;
-    }
-    
-    private class CuratorHeartbeatEventListener extends HeartbeatEventListener {   
-        private void clearSession(ClientEvent event) {
-            ((HeartBeater)event.getSource()).removeEventListener(this);
-            RSRServiceDiscoveryImpl.this.session = null;
-            RSRServiceDiscoveryImpl.this.heartbeater = null;
-        }
-        
-        @Override
-        public void onAck(HeartbeatAckEvent ack) {
-            // do nothing.
-        }
- 
-        @Override
-        public void onStopped(HeartbeatStoppedEvent stopped) {
-            // session was stopped cleanly.
-            clearSession(stopped);
-            if (stopped.isError()) {
-                try {
-                    registerAll();
-                } catch (Exception ex) {
-                    // depends on what the exception policy is.
-                }
-            }
-        }
- 
-        @Override
-        public void onError(HeartbeatErrorEvent error) {
-            clearSession(error);
-            if (error.isError()) {
-                try {
-                    registerAll();
-                } catch (Exception ex) {
-                    // depends on what the exception policy is.
-                }
-            }
-            
-        }
     }
 }

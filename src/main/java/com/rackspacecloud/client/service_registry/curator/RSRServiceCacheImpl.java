@@ -151,8 +151,10 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     private void pollAndProcessEvents() {
         PaginationOptions options = new PaginationOptions(100, null);
         List<BaseEvent> events = null;
+        int count = 0;
         do {
             if (shouldStopPolling) break;
+            count += 1;
             try {
                 // get events from server, filter the ones we are interested in.
                 events = discovery.getClient().getEventsClient().list(options);
@@ -163,5 +165,12 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
                 events = null;
             }
         } while (events != null && events.size() > 0);
+        
+        // if it only happened once, assume there are not many events happening.
+        if (count == 1) {
+            // todo: trace message.
+            // todo: this should become configurable.
+            try { Thread.sleep(1000); } catch (Exception ex) {}
+        }
     }
 }
