@@ -72,9 +72,6 @@ public class Event implements
         JsonObject payloadJsonObject = jsonObject.get("payload").getAsJsonObject();
         Long timestamp = jsonObject.get("timestamp").getAsLong();
 
-        System.out.print("===");
-        System.out.println(eventType);
-
         EventPayload payload = null;
 
         if (eventType.equals("configuration_value.update") ||
@@ -97,9 +94,6 @@ public class Event implements
             else {
                 payload =  new ConfigurationValueRemovedEventPayload(configurationId, oldValue);
             }
-
-            System.out.println(payload);
-
         }
         else if (eventType.equals("service.join") || eventType.equals("service.timeout") ||
                  eventType.equals("service.remove")) {
