@@ -126,7 +126,7 @@ class ServiceTracker<T> {
  
         @Override
         public void onStopped(HeartbeatStoppedEvent stopped) {
-            // session was stopped cleanly.
+            // service was stopped cleanly.
             resetService(stopped);
             if (stopped.isError()) {
                 try {
