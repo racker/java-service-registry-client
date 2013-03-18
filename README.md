@@ -10,6 +10,10 @@ Java client for Rackspace Service Registry.
 
 ### Installing the library using Maven
 
+#### Using Snapshot Builds
+
+Snapshots are hosted on the Sonatype repository.
+
 Add the following lines in the `repositories` and `dependencies` section in your `pom.xml`.
 
 ```xml
@@ -43,16 +47,21 @@ This lines are necessary because artifacts are currently only stored on Sonatype
 
 Replace `1.0.0-SNAPSHOT` with the desired version.
 
-### Registration and Heartbeat
+#### Using Released Builds
 
-```java
-Client client = new Client("MY_RAX_USER", "MY_RAX_API_KEY", Region.US);
-    
-Map<String, String> metadata = new HashMap<String, String>();
-metadata.put("host", "127.0.0.1");
-metadata.put("version", "0u812");
+Released versions of the library are integrated into Maven Central.  There is no need to specify complicated resolvers.
 
-SessionCreateResponse sessionResponse = client.sessions.create(15, metadata);
-    
-sessionResponse.getHeartbeater().start();
+```xml
+       <dependency>
+           <groupId>com.rackspacecloud</groupId>
+           <artifactId>service-registry-client</artifactId>
+           <version>1.0.0</version>
+       </dependency> 
 ```
+
+Other modules you may be interested in include `service-registry-curator` and `service-registry-examples`.
+
+### Examples
+
+Please see the [examples](tree/master/service-registry-examples/src/main/java/com/rackspacecloud/client/service_registry/examples) module.
+
