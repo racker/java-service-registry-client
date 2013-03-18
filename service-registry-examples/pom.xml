@@ -8,27 +8,12 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <name>Service Registry Client</name>
-    <artifactId>service-registry-client</artifactId>
+    <name>Service Registry Java Client Examples</name>
+    <artifactId>service-registry-examples</artifactId>
     <packaging>jar</packaging>
     <url>https://github.com/racker/java-service-registry-client</url>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.2</version>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -41,16 +26,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
+            <groupId>com.rackspacecloud</groupId>
+            <artifactId>service-registry-client</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.netflix.curator</groupId>
-            <artifactId>curator-x-discovery</artifactId>
-            <version>1.3.2</version>
-        </dependency>
+      <dependency>
+          <groupId>com.rackspacecloud</groupId>
+          <artifactId>service-registry-curator</artifactId>
+          <version>2.0.0-SNAPSHOT</version>
+      </dependency>
     </dependencies>
 
     <build>
