@@ -14,11 +14,11 @@ public class ServiceRegistryClientProvider implements ServiceRegistryClient {
     }
     @Override
     public List<Service> getServices(String tag) throws Exception {
-        return client.services.list(null, tag);
+        return client.getServicesClient().list(null, tag);
     }
 
     @Override
     public List<ConfigurationValue> getConfiguration() throws Exception {
-        return client.configuration.list(null);
+        return client.getConfigurationClient().list(null);
     }
 }
