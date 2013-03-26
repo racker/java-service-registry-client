@@ -22,7 +22,23 @@ import java.util.Map;
 public class Container {
     private Map<String, Object> metadata;
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
+    public Integer getCount() {
+        return Integer.parseInt(this.metadata.get("count").toString());
+    }
+
+    public Integer getLimit() {
+        return Integer.parseInt(this.metadata.get("limit").toString());
+    }
+
+    public String getMarker() {
+        return this.metadata.get("marker").toString();
+    }
+
+    public String getNextMarker() {
+        return this.metadata.get("next_marker").toString();
+    }
+
+    private Map<String, Object> getMetadata() {
+        return this.metadata;
     }
 }
