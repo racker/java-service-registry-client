@@ -86,7 +86,7 @@ public class ServiceRegistryConfigurationProviderTest {
             testInstance.addService(tag, ServiceRegistryConfigurationProvider.setHostPortPair(
                     host,
                     port,
-                    new Service("faux" + i, "fauxSession", Collections.singletonList(tag), new HashMap<String, String>())));
+                    new Service("faux" + i, 15, Collections.singletonList(tag), new HashMap<String, String>())));
         }
         String key = ServiceRegistryConfigurationProvider.PREFIX + "." + tag + ".addresses";
         pollOnce();
@@ -110,7 +110,7 @@ public class ServiceRegistryConfigurationProviderTest {
                 testInstance.addService(tags[i], ServiceRegistryConfigurationProvider.setHostPortPair(
                         host + i + j,
                         port,
-                        new Service("faux" + i + j, "fauxSession", Collections.singletonList(tags[i]), new HashMap<String, String>())));
+                        new Service("faux" + i + j, 15, Collections.singletonList(tags[i]), new HashMap<String, String>())));
 
 
                 Integer score = scoreboard.get(tags[i]);
