@@ -2,6 +2,7 @@ package com.netflix.config.sources;
 
 import com.rackspacecloud.client.service_registry.Client;
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
+import com.rackspacecloud.client.service_registry.objects.Event;
 import com.rackspacecloud.client.service_registry.objects.Service;
 
 import java.util.List;
@@ -20,5 +21,10 @@ public class ServiceRegistryClientProvider implements ServiceRegistryClient {
     @Override
     public List<ConfigurationValue> getConfiguration() throws Exception {
         return client.getConfigurationClient().list(null);
+    }
+
+    @Override
+    public List<Event> getEvents(String marker) throws Exception {
+        return client.getEventsClient().list(null);
     }
 }

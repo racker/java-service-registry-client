@@ -2,6 +2,7 @@ package com.netflix.config.sources.test;
 
 import com.netflix.config.sources.ServiceRegistryClient;
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
+import com.rackspacecloud.client.service_registry.objects.Event;
 import com.rackspacecloud.client.service_registry.objects.Service;
 
 import java.util.*;
