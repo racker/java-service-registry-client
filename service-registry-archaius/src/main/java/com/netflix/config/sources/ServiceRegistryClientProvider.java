@@ -12,13 +12,14 @@ public class ServiceRegistryClientProvider implements ServiceRegistryClient {
     public ServiceRegistryClientProvider(String user, String key, String region) {
         client = new Client(user, key, region);
     }
+
     @Override
     public List<Service> getServices(String tag) throws Exception {
-        return client.services.list(null, tag);
+        return client.getServicesClient().list(null, tag);
     }
 
     @Override
     public List<ConfigurationValue> getConfiguration() throws Exception {
-        return client.configuration.list(null);
+        return client.getConfigurationClient().list(null);
     }
 }
