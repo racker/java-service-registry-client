@@ -43,6 +43,7 @@ public class EventsClient extends BaseClient {
         super(authClient, apiUrl);
     }
 
+    // TODO: return container object with marker and other data
     public List<BaseEvent> list(PaginationOptions paginationOptions) throws Exception {
         String url = "/events";
         Type type = new TypeToken<EventsContainer>() {}.getType();
