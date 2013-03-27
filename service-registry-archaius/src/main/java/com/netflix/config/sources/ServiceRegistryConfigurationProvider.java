@@ -88,7 +88,11 @@ public class ServiceRegistryConfigurationProvider implements PolledConfiguration
                 String key = PREFIX + DELIMITER + tag + DELIMITER + SUFFIX;
 
                 for (Service service : client.getServices(tag)) {
-                    pairs.add(getHostPortPair(service));
+                    InetSocketAddress pair = getHostPortPair(service);
+
+                    if (pair != null) {
+                        pairs.add(pair);
+                    }
                 }
 
                 if (!pairs.isEmpty()) {
