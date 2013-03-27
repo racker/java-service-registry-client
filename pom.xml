@@ -19,6 +19,7 @@
         <module>service-registry-client</module>
         <module>service-registry-examples</module>
         <module>service-registry-curator</module>
+        <module>service-registry-archaius</module>
     </modules>
 
     <developers>
