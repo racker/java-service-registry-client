@@ -48,9 +48,15 @@ public class ServiceRegistryConfigurationProvider implements PolledConfiguration
             for (String tag: serviceTags) {
                 Set<InetSocketAddress> pairs = new HashSet<InetSocketAddress>();
                 String key = PREFIX + DELIMITER + tag + DELIMITER + SUFFIX;
+
                 for (Service service : client.getServices(tag)) {
-                    pairs.add(getHostPortPair(service));
+                    InetSocketAddress pair = getHostPortPair(service);
+
+                    if (pair != null) {
+                        pairs.add(pair);
+                    }
                 }
+
                 if (!pairs.isEmpty()) {
                     map.put(key, StringUtils.join(pairs, SEPARATOR));
                 }
