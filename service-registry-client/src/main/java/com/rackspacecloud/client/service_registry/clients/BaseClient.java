@@ -72,8 +72,8 @@ public abstract class BaseClient {
         this(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
-                org.apache.http.params.HttpConnectionParams.setSoTimeout(params, 10000);
-                params.setParameter("http.socket.timeout", 10000);
+                org.apache.http.params.HttpConnectionParams.setSoTimeout(params, 20000);
+                params.setParameter("http.socket.timeout", 20000);
                 return params;
             }
 
@@ -123,16 +123,31 @@ public abstract class BaseClient {
     }
 
     protected ClientResponse performListRequest(PaginationOptions paginationOptions, String path, List<NameValuePair> params, HttpRequestBase method, boolean parseAsJson, Type responseType) throws Exception {
+        Integer paramIndex;
+
         if (params == null) {
             params = new ArrayList<NameValuePair>();
         }
 
         if (paginationOptions != null) {
             if (paginationOptions.getLimit() != null) {
+                // TODO: Use a Hashmap and make this nicer
+                paramIndex = Utils.getNameIndex(params, "limit");
+
+                if (paramIndex != null)   {
+                    params.remove(paramIndex);
+                }
+
                 params.add(new BasicNameValuePair("limit", paginationOptions.getLimit().toString()));
             }
 
             if (paginationOptions.getMarker() != null) {
+                paramIndex = Utils.getNameIndex(params, "marker");
+
+                if (paramIndex != null)   {
+                    params.remove(paramIndex);
+                }
+
                 params.add(new BasicNameValuePair("marker", paginationOptions.getMarker()));
             }
         }
