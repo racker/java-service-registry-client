@@ -17,11 +17,13 @@
 
 package com.rackspacecloud.client.service_registry.clients;
 
+import com.google.common.collect.AbstractIterator;
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.HeartBeater;
 import com.rackspacecloud.client.service_registry.PaginationOptions;
 import com.rackspacecloud.client.service_registry.ServiceCreateResponse;
+import com.rackspacecloud.client.service_registry.containers.Container;
 import com.rackspacecloud.client.service_registry.containers.ServicesContainer;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
 import com.rackspacecloud.client.service_registry.objects.Service;
@@ -45,22 +47,31 @@ public class ServicesClient extends BaseClient {
         this.authClient = authClient;
     }
 
-    public List<Service> list(PaginationOptions paginationOptions) throws Exception {
+    public AbstractIterator<Service> list(PaginationOptions paginationOptions) throws Exception {
         return list(paginationOptions, null);
     }
 
-    public List<Service> list(PaginationOptions paginationOptions, String tag) throws Exception {
+    public AbstractIterator<Service> list(PaginationOptions paginationOptions, String tag) throws Exception {
         Type type = new TypeToken<ServicesContainer>() {}.getType();
+
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
         if (tag != null) {
             params.add(new BasicNameValuePair("tag", tag));
         }
 
-        ClientResponse response = this.performListRequest(paginationOptions, "/services", params, new HttpGet(), true, type);
+        if (paginationOptions == null) {
+            paginationOptions = new PaginationOptions();
+        }
 
-        ServicesContainer container = (ServicesContainer)response.getBody();
-        return container.getValues();
+        //ClientResponse response = this.performListRequest(paginationOptions, "/services", params, new HttpGet(), true, type);
+        //
+        //ServicesContainer container = (ServicesContainer)response.getBody();
+        //return container.getValues();
+
+        AbstractIterator<Service> iterator = this.getCollectionIterator(this, paginationOptions.getMarker(),
+                                                                        paginationOptions.getLimit(), "/services", params);
+        return iterator;
     }
 
     public Service get(String id) throws Exception {
@@ -89,5 +100,69 @@ public class ServicesClient extends BaseClient {
     public ServicesClient delete(String id) throws Exception {
         ClientResponse response = this.performRequest("/services/" + id, null, new HttpDelete());
         return this;
+    }
+
+    // TODO: Move into BaseClient and make it generic
+    protected AbstractIterator<Service> getCollectionIterator(final BaseClient client,
+                                                              final String startMarker,
+                                                              final Integer pageSize,
+                                                              final String uriPath,
+                                                              final List<NameValuePair> baseParams) {
+
+
+        return new AbstractIterator<Service>() {
+            private List<Service> results = new ArrayList<Service>();
+            private Integer resultsOffset = 0;
+            private Integer page = 0;
+            private String nextMarker = null;
+
+            @Override
+            protected Service computeNext() {
+                Type type = new TypeToken<ServicesContainer>() {}.getType();
+                ClientResponse response;
+
+                PaginationOptions paginationOptions = new PaginationOptions(pageSize, startMarker);
+                List<NameValuePair> params = new ArrayList<NameValuePair>(baseParams);
+
+                System.out.println("offset: " + this.resultsOffset);
+
+                // Emit values we have already retrieved
+                if ((this.results.size() > 0) && (this.resultsOffset < this.results.size())) {
+                    return this.results.get(this.resultsOffset++);
+                }
+
+                if (nextMarker != null) {
+                    paginationOptions.withMarker(nextMarker);
+                }
+
+                System.out.println(paginationOptions);
+
+                try {
+                    response = client.performListRequest(paginationOptions, uriPath, params, new HttpGet(), true, type);
+                }
+                catch (Exception ex) {
+                    System.out.println(ex);
+                    return endOfData();
+                }
+
+                ServicesContainer container = (ServicesContainer)response.getBody();
+                List<Service> values = container.getValues();
+
+                if (values.size() == 0) {
+                    // No results
+                    return endOfData();
+                }
+
+                this.results.addAll(values);
+
+                if (container.getNextMarker() != null) {
+                    // There is more data
+                    nextMarker = container.getNextMarker();
+                    page++;
+                }
+
+                return this.results.get(this.resultsOffset++);
+            }
+        };
     }
 }
