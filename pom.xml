@@ -11,7 +11,7 @@
     <name>Rackspace Service Registry</name>
     <artifactId>service-registry-parent</artifactId>
     <groupId>com.rackspacecloud</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <url>https://github.com/racker/java-service-registry-client</url>
   
@@ -19,6 +19,7 @@
         <module>service-registry-client</module>
         <module>service-registry-examples</module>
         <module>service-registry-curator</module>
+        <module>service-registry-archaius</module>
     </modules>
 
     <developers>
