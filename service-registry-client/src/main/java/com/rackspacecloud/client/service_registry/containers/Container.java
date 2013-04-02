@@ -17,24 +17,42 @@
 
 package com.rackspacecloud.client.service_registry.containers;
 
+import java.util.List;
 import java.util.Map;
 
 public class Container {
     private Map<String, Object> metadata;
 
     public Integer getCount() {
+        if (this.metadata.get("count") == null) {
+            return null;
+        }
+
         return Integer.parseInt(this.metadata.get("count").toString());
     }
 
     public Integer getLimit() {
+        if (this.metadata.get("limit") == null) {
+            return null;
+        }
+
         return Integer.parseInt(this.metadata.get("limit").toString());
     }
 
     public String getMarker() {
+        if (this.metadata.get("marker") == null) {
+            return null;
+        }
+
+
         return this.metadata.get("marker").toString();
     }
 
     public String getNextMarker() {
+        if (this.metadata.get("next_marker") == null) {
+            return null;
+        }
+
         return this.metadata.get("next_marker").toString();
     }
 
