@@ -115,6 +115,7 @@ public class ServicesClient extends BaseClient {
             private Integer resultsOffset = 0;
             private Integer page = 0;
             private String nextMarker = null;
+            private boolean exhausted = false;
 
             @Override
             protected Service computeNext() {
@@ -124,24 +125,24 @@ public class ServicesClient extends BaseClient {
                 PaginationOptions paginationOptions = new PaginationOptions(pageSize, startMarker);
                 List<NameValuePair> params = new ArrayList<NameValuePair>(baseParams);
 
-                System.out.println("offset: " + this.resultsOffset);
-
                 // Emit values we have already retrieved
                 if ((this.results.size() > 0) && (this.resultsOffset < this.results.size())) {
                     return this.results.get(this.resultsOffset++);
+                }
+
+                if (exhausted) {
+                    // No more data, iterator has been exhausted
+                    return endOfData();
                 }
 
                 if (nextMarker != null) {
                     paginationOptions.withMarker(nextMarker);
                 }
 
-                System.out.println(paginationOptions);
-
                 try {
                     response = client.performListRequest(paginationOptions, uriPath, params, new HttpGet(), true, type);
                 }
                 catch (Exception ex) {
-                    System.out.println(ex);
                     return endOfData();
                 }
 
@@ -150,6 +151,7 @@ public class ServicesClient extends BaseClient {
 
                 if (values.size() == 0) {
                     // No results
+                    exhausted = true;
                     return endOfData();
                 }
 
@@ -159,6 +161,9 @@ public class ServicesClient extends BaseClient {
                     // There is more data
                     nextMarker = container.getNextMarker();
                     page++;
+                }
+                else {
+                    exhausted = true;
                 }
 
                 return this.results.get(this.resultsOffset++);
