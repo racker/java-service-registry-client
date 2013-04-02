@@ -33,4 +33,9 @@ public class ConfigurationValue {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[ConfigurationValue id=%s, value=%s]", this.getId(), this.getValue());
+    }
 }

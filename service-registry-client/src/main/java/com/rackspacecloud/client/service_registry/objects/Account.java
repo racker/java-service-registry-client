@@ -28,4 +28,13 @@ public class Account {
         this.id = id;
         this.metadata = metadata;
     }
+
+    public String getId() {
+        return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[Account id=%s]", this.getId());
+    }
 }
