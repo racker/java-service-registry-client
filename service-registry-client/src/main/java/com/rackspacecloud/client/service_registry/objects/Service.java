@@ -67,4 +67,11 @@ public class Service {
     public Map<String, String> getMetadata() {
         return metadata;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[Service id=%s, last_seen=%s, heartbeat_timeout=%s]",
+                             this.getId(), this.getLastSeen(),
+                             this.getHeartbeatTimeout());
+    }
 }

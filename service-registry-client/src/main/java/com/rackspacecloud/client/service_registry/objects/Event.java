@@ -116,4 +116,10 @@ public class Event implements
 
         return new Event(id, timestamp, eventType, payload);
     }
+
+    @Override
+    public String toString() {
+        return String.format("[Event id=%s, type=%s, timestamp=%s]", this.getId(),
+                             this.getType(), this.getTimestamp());
+    }
 }
