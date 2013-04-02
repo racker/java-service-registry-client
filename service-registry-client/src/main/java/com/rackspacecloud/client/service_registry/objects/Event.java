@@ -119,7 +119,6 @@ public class Event implements
 
     @Override
     public String toString() {
-        return String.format("[Event id=%s, type=%s, timestamp=%s]", this.getId(),
-                             this.getType(), this.getTimestamp());
+        return String.format("[Event id=%s, type=%s, timestamp=%s]", this.getId(), this.getType(), this.getTimestamp());
     }
 }

@@ -134,7 +134,6 @@ public class HeartBeater extends BaseClient {
 
     @Override
     public String toString() {
-        return String.format("[HeartBeater serviceId=%s, heartbeat_timeout=%s]",
-                             this.getServiceId(), this.getHeartbeatTimeout());
+        return String.format("[HeartBeater serviceId=%s, heartbeat_timeout=%s]", this.getServiceId(), this.getHeartbeatTimeout());
     }
 }

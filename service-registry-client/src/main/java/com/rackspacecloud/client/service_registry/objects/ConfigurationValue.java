@@ -36,7 +36,6 @@ public class ConfigurationValue {
 
     @Override
     public String toString() {
-        return String.format("[ConfigurationValue id=%s, value=%s]",
-                             this.getId(), this.getValue());
+        return String.format("[ConfigurationValue id=%s, value=%s]", this.getId(), this.getValue());
     }
 }

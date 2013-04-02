@@ -49,7 +49,6 @@ public class PaginationOptions {
 
     @Override
     public String toString() {
-        return String.format("[PaginagionOptions limit=%s, marker=%s]", this.limit,
-                             this.marker);
+        return String.format("[PaginagionOptions limit=%s, marker=%s]", this.limit, this.marker);
     }
 }
