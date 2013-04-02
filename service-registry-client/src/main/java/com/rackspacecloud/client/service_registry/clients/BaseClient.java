@@ -72,8 +72,8 @@ public abstract class BaseClient {
         this(new DefaultHttpClient() {
             protected HttpParams createHttpParams() {
                 BasicHttpParams params = new BasicHttpParams();
-                org.apache.http.params.HttpConnectionParams.setSoTimeout(params, 10000);
-                params.setParameter("http.socket.timeout", 10000);
+                org.apache.http.params.HttpConnectionParams.setSoTimeout(params, 20000);
+                params.setParameter("http.socket.timeout", 20000);
                 return params;
             }
 
