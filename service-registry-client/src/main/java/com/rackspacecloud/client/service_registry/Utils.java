@@ -17,10 +17,24 @@
 
 package com.rackspacecloud.client.service_registry;
 
-public class Utils {
+import org.apache.http.NameValuePair;
 
+import java.util.ArrayList;
+import java.util.List;
+
+public class Utils {
     public static String getIdFromLocationHeader(String value) {
         String[] split = value.split("/");
         return split[split.length - 1];
+    }
+
+    public static Integer getNameIndex(List<NameValuePair> array, String name) {
+        for (int i = 0; i < array.size(); i++) {
+            if (array.get(i).getName().equals(name)) {
+                return i;
+            }
+        }
+
+        return null;
     }
 }
