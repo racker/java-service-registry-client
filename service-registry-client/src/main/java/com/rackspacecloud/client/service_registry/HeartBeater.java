@@ -54,6 +54,14 @@ public class HeartBeater extends BaseClient {
         this.heartbeatIntervalMillis = (long)(timeout * 1000L * (timeout < 15 ? 0.6d : 0.9d));
     }
 
+    public String getServiceId() {
+        return this.serviceId;
+    }
+
+    public Integer getHeartbeatTimeout() {
+        return this.heartbeatTimeoutSecs;
+    }
+
     private void runInThread() {
         ClientResponse response;
         String path = String.format("/services/%s/heartbeat", this.serviceId);
@@ -122,5 +130,10 @@ public class HeartBeater extends BaseClient {
     public synchronized void stop() {
         this.stopped = true;
         hbThread.interrupt();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[HeartBeater serviceId=%s, heartbeat_timeout=%s]", this.getServiceId(), this.getHeartbeatTimeout());
     }
 }
