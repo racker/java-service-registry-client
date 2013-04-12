@@ -28,6 +28,8 @@ import org.apache.http.client.methods.HttpPut;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,11 +38,11 @@ public class ConfigurationClient extends BaseClient {
         super(authClient, apiUrl);
     }
 
-    public List<ConfigurationValue> list(PaginationOptions paginationOptions) throws Exception {
+    public Iterator<ConfigurationValue> list(PaginationOptions paginationOptions) throws Exception {
         return list(paginationOptions, null);
     }
 
-    public List<ConfigurationValue> list(PaginationOptions paginationOptions, String namespace) throws Exception {
+    public Iterator<ConfigurationValue> list(PaginationOptions paginationOptions, String namespace) throws Exception {
         String url = "/configuration";
 
         Type type = new TypeToken<ConfigurationValuesContainer>() {}.getType();
@@ -59,10 +61,7 @@ public class ConfigurationClient extends BaseClient {
             }
         }
 
-        ClientResponse response = this.performListRequest(paginationOptions, url, null, new HttpGet(), true, type);
-
-        ConfigurationValuesContainer container = (ConfigurationValuesContainer)response.getBody();
-        return container.getValues();
+        return this.getListIterator(ConfigurationValue.class, url, paginationOptions, new HashMap<String, String>(), new HttpGet(), true, type);
     }
 
     public ConfigurationValue get(String id) throws Exception {

@@ -28,6 +28,8 @@ import com.rackspacecloud.client.service_registry.containers.EventsContainer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,80 +45,79 @@ public class EventsClient extends BaseClient {
         super(authClient, apiUrl);
     }
 
-    public List<BaseEvent> list(PaginationOptions paginationOptions) throws Exception {
-        String url = "/events";
+    public Iterator<BaseEvent> list(PaginationOptions paginationOptions) throws Exception {
         Type type = new TypeToken<EventsContainer>() {}.getType();
-        ClientResponse response = this.performListRequest(paginationOptions, url, null, new HttpGet(), true, type);
+        
+        final Iterator<Event> eventIterator = this.getListIterator(Event.class,
+                                                             "/events",
+                                                             paginationOptions,
+                                                             new HashMap<String, String>(),
+                                                             new HttpGet(),
+                                                             true,
+                                                             type);
+        return new Iterator<BaseEvent>() {
+            public boolean hasNext() {
+                return eventIterator.hasNext();
+            }
 
-        EventsContainer container = (EventsContainer)response.getBody();
-        List<BaseEvent> events = this.parseEvents(container.getValues());
-        return events;
+            public BaseEvent next() {
+                try {
+                    return parseEvent(eventIterator.next());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            public void remove() {
+                eventIterator.remove();
+            }
+        };
+        
+        
     }
 
     /**
-     * Takes a list of raw Event objects and convert into a List of BaseEvent
-     * objects.
-     * @param events List of Event objects.
-     * @return List of BaseEvent objects.
+     * Converts Event to BaseEvent.
+     * @param rawEvent Event object.
+     * @return BaseEvent object.
      */
-    private List<BaseEvent> parseEvents(List<Event> events) throws Exception {
-        String type;
-        EventPayload payload;
-        BaseEvent event;
-
-        String configurationValueId;
-        ConfigurationValue oldValue, newValue;
-
-        List<BaseEvent> result = new ArrayList<BaseEvent>();
-
-        for (Event rawEvent : events) {
-            type = rawEvent.getType();
-            payload = rawEvent.getPayload();
-
-            if (!VALID_EVENT_TYPES.contains(type)) {
-                throw new Exception("Unrecognized event type: " + type);
-            }
-
-            if (type.compareTo("service.join") == 0) {
-                ServiceJoinEventPayload eventPayload = ((ServiceJoinEventPayload)payload);
-
-                event = new ServiceJoinEvent(eventPayload.getService());
-                result.add(event);
-            }
-            else if (type.compareTo("service.timeout") == 0) {
-                ServiceTimeoutEventPayload eventPayload = ((ServiceTimeoutEventPayload)payload);
-
-                event = new ServiceTimeoutEvent(eventPayload.getService());
-                result.add(event);
-            }
-            else if (type.compareTo("service.remove") == 0) {
-                ServiceRemoveEventPayload eventPayload = ((ServiceRemoveEventPayload)payload);
-
-                event = new ServiceRemoveEvent(eventPayload.getService());
-                result.add(event);
-            }
-            else if (type.compareTo("configuration_value.update") == 0) {
-                ConfigurationValueUpdatedEventPayload eventPayload = ((ConfigurationValueUpdatedEventPayload)payload);
-
-                configurationValueId = eventPayload.getConfigurationId();
-                oldValue = (eventPayload.getOldValue() == null) ? null : new ConfigurationValue(configurationValueId, eventPayload.getOldValue());
-                newValue = new ConfigurationValue(configurationValueId,eventPayload.getNewValue());
-
-                event = new ConfigurationValueUpdatedEvent(oldValue, newValue);
-                result.add(event);
-            }
-            else if (type.compareTo("configuration_value.remove") == 0) {
-
-                ConfigurationValueRemovedEventPayload eventPayload = ((ConfigurationValueRemovedEventPayload)payload);
-
-                configurationValueId = eventPayload.getConfigurationId();
-                oldValue = (eventPayload.getOldValue() == null) ? null : new ConfigurationValue(configurationValueId, eventPayload.getOldValue());
-
-                event = new ConfigurationValueRemovedEvent(oldValue);
-                result.add(event);
-            }
+    private BaseEvent parseEvent(Event rawEvent) throws Exception {
+        if (!VALID_EVENT_TYPES.contains(rawEvent.getType())) {
+            throw new Exception("Unrecognized event type: " + rawEvent.getType());
         }
 
-        return result;
+        if (rawEvent.getType().compareTo("service.join") == 0) {
+            ServiceJoinEventPayload eventPayload = ((ServiceJoinEventPayload)rawEvent.getPayload());
+
+            return new ServiceJoinEvent(eventPayload.getService());
+        }
+        else if (rawEvent.getType().compareTo("service.timeout") == 0) {
+            ServiceTimeoutEventPayload eventPayload = ((ServiceTimeoutEventPayload)rawEvent.getPayload());
+
+            return new ServiceTimeoutEvent(eventPayload.getService());
+        }
+        else if (rawEvent.getType().compareTo("service.remove") == 0) {
+            ServiceRemoveEventPayload eventPayload = ((ServiceRemoveEventPayload)rawEvent.getPayload());
+
+            return new ServiceRemoveEvent(eventPayload.getService());
+        }
+        else if (rawEvent.getType().compareTo("configuration_value.update") == 0) {
+            ConfigurationValueUpdatedEventPayload eventPayload = ((ConfigurationValueUpdatedEventPayload)rawEvent.getPayload());
+            String configurationValueId = eventPayload.getConfigurationId();
+            ConfigurationValue oldValue = (eventPayload.getOldValue() == null) ? null : new ConfigurationValue(configurationValueId, eventPayload.getOldValue());
+            ConfigurationValue newValue = new ConfigurationValue(configurationValueId,eventPayload.getNewValue());
+
+            return new ConfigurationValueUpdatedEvent(oldValue, newValue);
+        }
+        else if (rawEvent.getType().compareTo("configuration_value.remove") == 0) {
+            ConfigurationValueRemovedEventPayload eventPayload = ((ConfigurationValueRemovedEventPayload)rawEvent.getPayload());
+            String configurationValueId = eventPayload.getConfigurationId();
+            ConfigurationValue oldValue = (eventPayload.getOldValue() == null) ? null : new ConfigurationValue(configurationValueId, eventPayload.getOldValue());
+
+            return new ConfigurationValueRemovedEvent(oldValue);
+        }
+        else {
+            throw new Exception("Unexpected even type: " + rawEvent.getType());
+        }
     }
 }
