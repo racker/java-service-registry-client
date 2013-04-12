@@ -19,7 +19,7 @@ package com.rackspacecloud.client.service_registry.containers;
 
 import java.util.Map;
 
-public class Container {
+public abstract class Container {
     private Map<String, Object> metadata;
 
     public Map<String, Object> getMetadata() {

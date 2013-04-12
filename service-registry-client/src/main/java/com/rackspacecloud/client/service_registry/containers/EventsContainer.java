@@ -22,7 +22,7 @@ import com.rackspacecloud.client.service_registry.objects.Event;
 
 import java.util.List;
 
-public class EventsContainer {
+public class EventsContainer implements ContainerMeta<Event> {
     private List<Event> values;
 
     public List<Event> getValues() {

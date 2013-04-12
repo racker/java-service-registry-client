@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Service {
+public class Service implements HasId {
     private String id;
 
     @SerializedName("heartbeat_timeout")

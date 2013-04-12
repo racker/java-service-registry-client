@@ -21,7 +21,7 @@ import com.rackspacecloud.client.service_registry.objects.Service;
 
 import java.util.List;
 
-public class ServicesContainer extends Container {
+public class ServicesContainer extends Container implements ContainerMeta<Service> {
     private List<Service> values;
 
     public List<Service> getValues() {

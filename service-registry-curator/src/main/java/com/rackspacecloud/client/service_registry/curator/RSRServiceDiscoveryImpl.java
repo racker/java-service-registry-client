@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -79,45 +80,36 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
     /** return all distinct names registered by this discovery type. */
     public Collection<String> queryForNames() throws Exception {
         Set<String> names = new HashSet<String>();
-        PaginationOptions options = new PaginationOptions(100, null);
-        List<Service> services = null; // todo: use a set to avoid duplicates.
+        // todo: it would be better to do:
+        // services = client.getServicesClient().list(options, typeTag);
+        // but there are some validation problems (the tag is allowed to be written, but not queried on).
+        Iterator<Service> services = client.getServicesClient().list(new PaginationOptions(100, null));
         
-        do {
-            // todo: it would be better to do:
-            // services = client.getServicesClient().list(options, typeTag);
-            // but there are some validation problems (the tag is allowed to be written, but not queried on).
-            services = client.getServicesClient().list(options);
-            for (Service service : services) {
-                options = options.withMarker(service.getId());
-                // this conditional can be removed when the above operation works.
-                if (!service.getTags().contains(typeTag)) {
-                    continue;
-                }
-                String name = service.getMetadata().get(ServiceTracker.NAME);
-                if (!names.contains(name)) {
-                    names.add(name);
-                }
+        while (services.hasNext()) {
+            Service service = services.next();
+            // this conditional can be removed when the above operation works.
+            if (!service.getTags().contains(typeTag)) {
+                continue;
             }
-        } while (services != null && services.size() > 1);
-        
+            String name = service.getMetadata().get(ServiceTracker.NAME);
+            if (!names.contains(name)) {
+                names.add(name);
+            }
+        }
         return names;
     }
 
     /** return all instances registered to this particular name for this discovery type */
     public Collection<ServiceInstance<T>> queryForInstances(String name) throws Exception {
         List<ServiceInstance<T>> serviceInstances = new ArrayList<ServiceInstance<T>>();
-        PaginationOptions options = new PaginationOptions(100, null);
-        List<Service> services = null; // todo: use a set to avoid duplicates.
-        do {
-            services = client.getServicesClient().list(options);
-            for (Service service : services) {
-                if (service.getTags().contains(typeTag) && service.getMetadata().get(ServiceTracker.NAME).equals(name)) {
-                    // does the job of the serializer in the curator code (theirs is just a json marshaller anyway).
-                    serviceInstances.add(convert(service));
-                }
-                options = options.withMarker(service.getId());
+        Iterator<Service> services = client.getServicesClient().list(new PaginationOptions(100, null));
+        while (services.hasNext()) {
+            Service service = services.next();
+            if (service.getTags().contains(typeTag) && service.getMetadata().get(ServiceTracker.NAME).equals(name)) {
+                // does the job of the serializer in the curator code (theirs is just a json marshaller anyway).
+                serviceInstances.add(convert(service));
             }
-        } while (services != null && services.size() > 1);
+        }
         return serviceInstances;
     }
 

@@ -1,9 +1,12 @@
 package com.netflix.config.sources;
 
 import com.rackspacecloud.client.service_registry.Client;
+import com.rackspacecloud.client.service_registry.PaginationOptions;
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
 import com.rackspacecloud.client.service_registry.objects.Service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ServiceRegistryClientProvider implements ServiceRegistryClient {
@@ -15,7 +18,12 @@ public class ServiceRegistryClientProvider implements ServiceRegistryClient {
 
     @Override
     public List<Service> getServices(String tag) throws Exception {
-        return client.getServicesClient().list(null, tag);
+        List<Service> services = new ArrayList<Service>();
+        Iterator<Service> it = client.getServicesClient().list(new PaginationOptions(100, null), tag); 
+        while (it.hasNext()) {
+            services.add(it.next());
+        }
+        return services;
     }
 
     @Override
