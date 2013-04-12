@@ -133,7 +133,6 @@ public abstract class BaseClient {
             boolean exhausted = false;
             
             List<T> curValues;
-            List<T> nextValues;
             String nextMarker = options.getMarker();
             
             boolean first = true;
@@ -144,18 +143,13 @@ public abstract class BaseClient {
                 if (this.curValues == null && !this.exhausted) {
                     this.curValues = getNextPage();
                 }
-                if (this.nextValues == null && !this.exhausted) {
-                    this.nextValues = getNextPage();
-                }
-                return (this.curValues != null && this.curValues.size() > 0) 
-                        || (this.nextValues != null && this.nextValues.size() > 0);
+                return this.curValues != null && this.curValues.size() > 0;
             }
 
             public T next() {
                 T item = this.curValues.remove(0);
-                if (this.curValues.size() == 0) {
-                    this.curValues = this.nextValues;
-                    this.nextValues = null;
+                if (this.curValues.size() == 0 && !this.exhausted) {
+                    this.curValues = this.getNextPage();
                 }
                 return item;
             }
@@ -186,7 +180,7 @@ public abstract class BaseClient {
                     if (!this.first && values.size() > 0) {
                         values.remove(0);
                     }
-                    if (values.size() == 0) {
+                    if (container.getNextMarker() == null) {
                         this.exhausted = true;
                     } else {
                         nextMarker = values.get(values.size() - 1).getId();

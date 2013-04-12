@@ -31,14 +31,18 @@ public abstract class Container {
     }
 
     public String getMarker() {
-        return this.metadata.get("marker").toString();
+        return stringOrNull(this.metadata.get("marker"));
     }
 
     public String getNextMarker() {
-        return this.metadata.get("next_marker").toString();
+        return stringOrNull(this.metadata.get("next_marker"));
     }
 
     private Map<String, Object> getMetadata() {
         return this.metadata;
+    }
+    
+    private static String stringOrNull(Object o) {
+        return o == null ? null : o.toString();
     }
 }
