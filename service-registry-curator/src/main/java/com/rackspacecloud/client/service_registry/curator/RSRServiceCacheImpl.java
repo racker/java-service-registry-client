@@ -8,10 +8,9 @@ import com.netflix.curator.x.discovery.ServiceCache;
 import com.netflix.curator.x.discovery.ServiceInstance;
 import com.netflix.curator.x.discovery.details.ServiceCacheListener;
 import com.rackspacecloud.client.service_registry.PaginationOptions;
-import com.rackspacecloud.client.service_registry.events.server.AbstractServiceEvent;
-import com.rackspacecloud.client.service_registry.events.server.BaseEvent;
-import com.rackspacecloud.client.service_registry.events.server.ServiceJoinEvent;
-import com.rackspacecloud.client.service_registry.events.server.ServiceTimeoutEvent;
+import com.rackspacecloud.client.service_registry.objects.Event;
+import com.rackspacecloud.client.service_registry.objects.EventType;
+import com.rackspacecloud.client.service_registry.objects.ServicePayload;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -105,13 +104,14 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     
     // helpers
     
-    private boolean isPertinent(BaseEvent e) {
-        return e instanceof AbstractServiceEvent && ((AbstractServiceEvent)e).getService().getTags().contains(discovery.getType());
+    private boolean isPertinent(Event e) {
+        return (e.getPayload() instanceof ServicePayload)
+               && ((ServicePayload)e.getPayload()).getService().getTags().contains(discovery.getType());
     }
     
-    private String processEvents(List<BaseEvent> events) {
+    private String processEvents(List<Event> events) {
         String lastId = null;
-        for (BaseEvent e : events) {
+        for (Event e : events) {
             lastId = e.getId();
             if (!isPertinent(e)) {
                 continue;
@@ -128,12 +128,12 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
                 });
                 
                 // make sure the local collection is maintained.
-                final AbstractServiceEvent ee = (AbstractServiceEvent)e;
+                final ServicePayload ee = (ServicePayload)e.getPayload();
                 if (name == null || (name.equals(ee.getService().getMetadata().get("name")))) {
                     try {
-                        if (ee instanceof ServiceJoinEvent) {
+                        if (e.getType() == EventType.SERVICE_JOINED) {
                             instances.put(ee.getService().getId(), discovery.convert(ee.getService()));
-                        } else if (ee instanceof ServiceTimeoutEvent) {
+                        } else if (e.getType() == EventType.SERVICE_REMOVED || e.getType() == EventType.SERVICE_TIMEOUT) {
                             instances.remove(ee.getService().getId());
                         }
                     } catch (Exception fromConverter) {
@@ -150,7 +150,7 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     // pull a page of events, process that page, pull the next page, etc.
     private void pollAndProcessEvents() {
         PaginationOptions options = new PaginationOptions(100, null);
-        List<BaseEvent> events = null;
+        List<Event> events = null;
         int count = 0;
         do {
             if (shouldStopPolling) break;

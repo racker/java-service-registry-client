@@ -17,7 +17,7 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-public class ConfigurationValueUpdatedEventPayload extends EventPayload {
+public class ConfigurationValueUpdatedEventPayload implements EventPayload {
     private String configurationId;
     private String oldValue;
     private String newValue;

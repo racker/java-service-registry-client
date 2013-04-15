@@ -17,8 +17,7 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-
-public class ServiceTimeoutEventPayload extends EventPayload {
+public class ServiceTimeoutEventPayload implements EventPayload, ServicePayload {
     private Service service;
 
     public ServiceTimeoutEventPayload(Service service) {
