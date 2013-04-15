@@ -19,104 +19,26 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.PaginationOptions;
-import com.rackspacecloud.client.service_registry.events.server.*;
 import com.rackspacecloud.client.service_registry.objects.*;
 import org.apache.http.client.methods.HttpGet;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.containers.EventsContainer;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class EventsClient extends BaseClient {
-    private static final List VALID_EVENT_TYPES = new ArrayList<String>(Arrays.asList(new String[]{
-            "service.join",
-            "service.timeout",
-            "service.remove",
-            "configuration_value.update",
-            "configuration_value.remove"}));
 
     public EventsClient(AuthClient authClient, String apiUrl) {
         super(authClient, apiUrl);
     }
 
-    public List<BaseEvent> list(PaginationOptions paginationOptions) throws Exception {
+    public List<Event> list(PaginationOptions paginationOptions) throws Exception {
         String url = "/events";
         Type type = new TypeToken<EventsContainer>() {}.getType();
         ClientResponse response = this.performListRequest(paginationOptions, url, null, new HttpGet(), true, type);
 
         EventsContainer container = (EventsContainer)response.getBody();
-        List<BaseEvent> events = this.parseEvents(container.getValues());
-        return events;
-    }
-
-    /**
-     * Takes a list of raw Event objects and convert into a List of BaseEvent
-     * objects.
-     * @param events List of Event objects.
-     * @return List of BaseEvent objects.
-     */
-    private List<BaseEvent> parseEvents(List<Event> events) throws Exception {
-        String type;
-        EventPayload payload;
-        BaseEvent event;
-
-        String configurationValueId;
-        ConfigurationValue oldValue, newValue;
-
-        List<BaseEvent> result = new ArrayList<BaseEvent>();
-
-        for (Event rawEvent : events) {
-            type = rawEvent.getType();
-            payload = rawEvent.getPayload();
-
-            if (!VALID_EVENT_TYPES.contains(type)) {
-                throw new Exception("Unrecognized event type: " + type);
-            }
-
-            if (type.compareTo("service.join") == 0) {
-                ServiceJoinEventPayload eventPayload = ((ServiceJoinEventPayload)payload);
-
-                event = new ServiceJoinEvent(eventPayload.getService());
-                result.add(event);
-            }
-            else if (type.compareTo("service.timeout") == 0) {
-                ServiceTimeoutEventPayload eventPayload = ((ServiceTimeoutEventPayload)payload);
-
-                event = new ServiceTimeoutEvent(eventPayload.getService());
-                result.add(event);
-            }
-            else if (type.compareTo("service.remove") == 0) {
-                ServiceRemoveEventPayload eventPayload = ((ServiceRemoveEventPayload)payload);
-
-                event = new ServiceRemoveEvent(eventPayload.getService());
-                result.add(event);
-            }
-            else if (type.compareTo("configuration_value.update") == 0) {
-                ConfigurationValueUpdatedEventPayload eventPayload = ((ConfigurationValueUpdatedEventPayload)payload);
-
-                configurationValueId = eventPayload.getConfigurationId();
-                oldValue = (eventPayload.getOldValue() == null) ? null : new ConfigurationValue(configurationValueId, eventPayload.getOldValue());
-                newValue = new ConfigurationValue(configurationValueId,eventPayload.getNewValue());
-
-                event = new ConfigurationValueUpdatedEvent(oldValue, newValue);
-                result.add(event);
-            }
-            else if (type.compareTo("configuration_value.remove") == 0) {
-
-                ConfigurationValueRemovedEventPayload eventPayload = ((ConfigurationValueRemovedEventPayload)payload);
-
-                configurationValueId = eventPayload.getConfigurationId();
-                oldValue = (eventPayload.getOldValue() == null) ? null : new ConfigurationValue(configurationValueId, eventPayload.getOldValue());
-
-                event = new ConfigurationValueRemovedEvent(oldValue);
-                result.add(event);
-            }
-        }
-
-        return result;
+        return container.getValues();
     }
 }

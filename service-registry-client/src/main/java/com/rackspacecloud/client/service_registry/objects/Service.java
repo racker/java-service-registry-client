@@ -18,13 +18,16 @@
 package com.rackspacecloud.client.service_registry.objects;
 
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Service {
+    public static final Type TYPE = new TypeToken<Service>() {}.getType();
     private String id;
 
     @SerializedName("heartbeat_timeout")
