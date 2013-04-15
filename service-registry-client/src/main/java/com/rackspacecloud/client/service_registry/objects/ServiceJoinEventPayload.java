@@ -17,7 +17,7 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-public class ServiceJoinEventPayload extends EventPayload {
+public class ServiceJoinEventPayload implements EventPayload, ServicePayload {
     private Service service;
 
     public ServiceJoinEventPayload(Service service) {

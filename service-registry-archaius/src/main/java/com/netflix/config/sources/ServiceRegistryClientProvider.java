@@ -1,5 +1,6 @@
 package com.netflix.config.sources;
 
+import com.google.common.collect.Lists;
 import com.rackspacecloud.client.service_registry.Client;
 import com.rackspacecloud.client.service_registry.PaginationOptions;
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
@@ -28,6 +29,6 @@ public class ServiceRegistryClientProvider implements ServiceRegistryClient {
 
     @Override
     public List<ConfigurationValue> getConfiguration() throws Exception {
-        return client.getConfigurationClient().list(null);
+        return Lists.newArrayList(client.getConfigurationClient().list(null));
     }
 }
