@@ -126,14 +126,20 @@ public abstract class BaseClient {
         }
     }
     
-    protected <T extends HasId> Iterator<T> getListIterator(final Class<T> clazz, final String path, final PaginationOptions options, final Map<String, String> otherParams, final HttpRequestBase method, final boolean parseAsJson, final Type type) {
+    protected <T extends HasId> Iterator<T> getListIterator(final Class<T> clazz, 
+                                                            final String path, 
+                                                            final PaginationOptions paginationOptions, 
+                                                            final Map<String, String> otherParams, 
+                                                            final HttpRequestBase method, 
+                                                            final boolean parseAsJson, 
+                                                            final Type type) {
         return new Iterator<T>() {
             
             // means we are done fetching, not done iterating.
             boolean exhausted = false;
             
             List<T> curValues;
-            String nextMarker = options.getMarker();
+            String nextMarker = paginationOptions.getMarker();
             
             boolean first = true;
             
@@ -162,8 +168,8 @@ public abstract class BaseClient {
                 for (Map.Entry<String, String> entry : otherParams.entrySet()) {
                     params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
                 }
-                if (options.getLimit() != null) {
-                    params.add(new BasicNameValuePair("limit", options.getLimit().toString()));
+                if (paginationOptions.getLimit() != null) {
+                    params.add(new BasicNameValuePair("limit", paginationOptions.getLimit().toString()));
                 } else {
                     params.add(new BasicNameValuePair("limit", "100"));
                 }
