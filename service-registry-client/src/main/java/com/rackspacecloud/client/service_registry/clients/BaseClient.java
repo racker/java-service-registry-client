@@ -138,8 +138,6 @@ public abstract class BaseClient {
             boolean first = true;
             
             public boolean hasNext() {
-                // fetch two pages because of the way markers work (we need to fetch until we get a page with only one
-                // item).
                 if (this.curValues == null && !this.exhausted) {
                     this.curValues = getNextPage();
                 }
