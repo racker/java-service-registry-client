@@ -17,8 +17,7 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-
-public class ServiceRemoveEventPayload extends EventPayload {
+public class ServiceRemoveEventPayload implements EventPayload, ServicePayload {
     private Service service;
 
     public ServiceRemoveEventPayload(Service service) {
