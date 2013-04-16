@@ -136,12 +136,10 @@ public abstract class BaseClient {
         return new Iterator<T>() {
             
             // means we are done fetching, not done iterating.
-            boolean exhausted = false;
+            private boolean exhausted = false;
             
-            List<T> curValues;
-            String nextMarker = paginationOptions.getMarker();
-            
-            boolean first = true;
+            private List<T> curValues;
+            private String nextMarker = paginationOptions.getMarker();
             
             public boolean hasNext() {
                 if (this.curValues == null && !this.exhausted) {
@@ -181,15 +179,11 @@ public abstract class BaseClient {
                     ClientResponse response = performRequest(path, params, method, parseAsJson, type);
                     ContainerMeta<T> container = (ContainerMeta<T>)response.getBody();
                     List<T> values = container.getValues();
-                    if (!this.first && values.size() > 0) {
-                        values.remove(0);
-                    }
                     if (container.getNextMarker() == null) {
                         this.exhausted = true;
                     } else {
-                        nextMarker = values.get(values.size() - 1).getId();
+                        nextMarker = container.getNextMarker();
                     }
-                    this.first = false;
                     
                     return values;
                 } catch (Exception ex) {
