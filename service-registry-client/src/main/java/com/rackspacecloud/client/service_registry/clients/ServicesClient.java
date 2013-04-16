@@ -20,7 +20,7 @@ package com.rackspacecloud.client.service_registry.clients;
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.HeartBeater;
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
 import com.rackspacecloud.client.service_registry.ServiceCreateResponse;
 import com.rackspacecloud.client.service_registry.containers.ServicesContainer;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
@@ -44,19 +44,17 @@ public class ServicesClient extends BaseClient {
         this.authClient = authClient;
     }
 
-    public Iterator<Service> list(PaginationOptions paginationOptions) throws Exception {
-        return list(paginationOptions, null);
+    public Iterator<Service> list(MethodOptions methodOptions) throws Exception {
+        return list(methodOptions, null);
     }
 
-    public Iterator<Service> list(PaginationOptions paginationOptions, String tag) throws Exception {
+    public Iterator<Service> list(MethodOptions methodOptions, String tag) throws Exception {
         Type type = new TypeToken<ServicesContainer>() {}.getType();
-        Map<String, String> additionalOptions = new HashMap<String, String>();
-
         if (tag != null) {
-            additionalOptions.put("tag", tag);
+            methodOptions = methodOptions.withOption("tag", tag);
         }
         
-        return this.getListIterator(Service.class, "/services", paginationOptions, additionalOptions, new HttpGet(), true, type);
+        return this.getListIterator(Service.class, "/services", methodOptions, new HttpGet(), true, type);
     }
 
     public Service get(String id) throws Exception {

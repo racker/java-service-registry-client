@@ -18,7 +18,7 @@
 package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
 import com.rackspacecloud.client.service_registry.objects.*;
 import org.apache.http.client.methods.HttpGet;
 import com.rackspacecloud.client.service_registry.containers.EventsContainer;
@@ -34,13 +34,12 @@ public class EventsClient extends BaseClient {
         super(authClient, apiUrl);
     }
 
-    public Iterator<Event> list(PaginationOptions paginationOptions) throws Exception {
+    public Iterator<Event> list(MethodOptions methodOptions) throws Exception {
         Type type = new TypeToken<EventsContainer>() {}.getType();
         
         return this.getListIterator(Event.class,
                                     "/events",
-                                    paginationOptions,
-                                    new HashMap<String, String>(),
+                                    methodOptions,
                                     new HttpGet(),
                                     true,
                                     type);

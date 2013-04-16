@@ -19,30 +19,26 @@ package com.rackspacecloud.client.service_registry.clients;
 
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
 import com.rackspacecloud.client.service_registry.containers.ConfigurationValuesContainer;
 import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class ConfigurationClient extends BaseClient {
     public ConfigurationClient(AuthClient authClient, String apiUrl) {
         super(authClient, apiUrl);
     }
 
-    public Iterator<ConfigurationValue> list(PaginationOptions paginationOptions) throws Exception {
-        return list(paginationOptions, null);
+    public Iterator<ConfigurationValue> list(MethodOptions methodOptions) throws Exception {
+        return list(methodOptions, null);
     }
 
-    public Iterator<ConfigurationValue> list(PaginationOptions paginationOptions, String namespace) throws Exception {
+    public Iterator<ConfigurationValue> list(MethodOptions methodOptions, String namespace) throws Exception {
         String url = "/configuration";
 
         Type type = new TypeToken<ConfigurationValuesContainer>() {}.getType();
@@ -61,7 +57,7 @@ public class ConfigurationClient extends BaseClient {
             }
         }
 
-        return this.getListIterator(ConfigurationValue.class, url, paginationOptions, new HashMap<String, String>(), new HttpGet(), true, type);
+        return this.getListIterator(ConfigurationValue.class, url, methodOptions, new HttpGet(), true, type);
     }
 
     public ConfigurationValue get(String id) throws Exception {

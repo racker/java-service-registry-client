@@ -7,7 +7,7 @@ import com.netflix.curator.x.discovery.ServiceInstance;
 import com.netflix.curator.x.discovery.ServiceProviderBuilder;
 import com.netflix.curator.x.discovery.strategies.RoundRobinStrategy;
 import com.rackspacecloud.client.service_registry.Client;
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
 import com.rackspacecloud.client.service_registry.objects.Service;
 
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
         // todo: it would be better to do:
         // services = client.getServicesClient().list(options, typeTag);
         // but there are some validation problems (the tag is allowed to be written, but not queried on).
-        Iterator<Service> services = client.getServicesClient().list(new PaginationOptions(100, null));
+        Iterator<Service> services = client.getServicesClient().list(new MethodOptions(100, null));
         
         while (services.hasNext()) {
             Service service = services.next();
@@ -102,7 +102,7 @@ public class RSRServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
     /** return all instances registered to this particular name for this discovery type */
     public Collection<ServiceInstance<T>> queryForInstances(String name) throws Exception {
         List<ServiceInstance<T>> serviceInstances = new ArrayList<ServiceInstance<T>>();
-        Iterator<Service> services = client.getServicesClient().list(new PaginationOptions(100, null));
+        Iterator<Service> services = client.getServicesClient().list(new MethodOptions(100, null));
         while (services.hasNext()) {
             Service service = services.next();
             if (service.getTags().contains(typeTag) && service.getMetadata().get(ServiceTracker.NAME).equals(name)) {
