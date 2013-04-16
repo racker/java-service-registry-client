@@ -25,16 +25,23 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rackspacecloud.client.service_registry.Client;
 import com.rackspacecloud.client.service_registry.ClientResponse;
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
+import com.rackspacecloud.client.service_registry.containers.ContainerMeta;
 import com.rackspacecloud.client.service_registry.events.client.ClientEvent;
 import com.rackspacecloud.client.service_registry.events.client.ClientEventListener;
 import com.rackspacecloud.client.service_registry.events.client.ClientEventThread;
+import com.rackspacecloud.client.service_registry.objects.HasId;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -121,19 +128,93 @@ public abstract class BaseClient {
             }
         }
     }
+    
+    protected <T extends HasId> Iterator<T> getListIterator(final Class<T> clazz, 
+                                                            final String path, 
+                                                            final MethodOptions methodOptions,
+                                                            final HttpRequestBase method, 
+                                                            final boolean parseAsJson, 
+                                                            final Type type) {
+        return new Iterator<T>() {
+            
+            // means we are done fetching, not done iterating.
+            private boolean exhausted = false;
+            
+            private List<T> curValues;
+            private String nextMarker = methodOptions.getMarker();
+            
+            // NOTE: The groundwork has been laid to let methodOptions.getLimit() become a limit for the number of total
+            //       results returned. We can use any value we want for the page size now.  As for now,
+            //       methodOptions.getLimit() refers to the page size, which may not be intuitive.
+            // these are all the keys we are interested in when paging.
+            private Set<String> constantPagingParams = Collections.unmodifiableSet(new HashSet<String>() {{
+                addAll(methodOptions.getNonNullKeys());
+                remove(MethodOptions.PaginationOptions.Marker.toString());
+            }});
+            
+            public boolean hasNext() {
+                if (this.curValues == null && !this.exhausted) {
+                    this.curValues = getNextPage();
+                }
+                return this.curValues != null && this.curValues.size() > 0;
+            }
 
-    protected ClientResponse performListRequest(PaginationOptions paginationOptions, String path, List<NameValuePair> params, HttpRequestBase method, boolean parseAsJson, Type responseType) throws Exception {
+            public T next() {
+                T item = this.curValues.remove(0);
+                if (this.curValues.size() == 0 && !this.exhausted) {
+                    this.curValues = this.getNextPage();
+                }
+                return item;
+            }
+
+            public void remove() {
+                throw new RuntimeException("Not implemented");
+            }
+            
+            private List<T> getNextPage() {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                // backfill everything from options into params except "marker". We handle that manually.
+                for (String key : constantPagingParams) {
+                    params.add(new BasicNameValuePair(key, methodOptions.get(key)));
+                }
+                
+                if (this.nextMarker != null) {
+                    params.add(new BasicNameValuePair("marker", this.nextMarker));
+                }
+                
+                try {
+                    ClientResponse response = performRequest(path, params, method, parseAsJson, type);
+                    ContainerMeta<T> container = (ContainerMeta<T>)response.getBody();
+                    List<T> values = container.getValues();
+                    if (container.getNextMarker() == null) {
+                        this.exhausted = true;
+                    } else {
+                        nextMarker = container.getNextMarker();
+                    }
+                    
+                    return values;
+                } catch (Exception ex) {
+                    // be careful about throwing, you're in an iterator.
+                    this.exhausted = true;
+                    return new ArrayList<T>();
+                }
+                
+            }
+        };
+    }
+
+    protected ClientResponse performListRequest(MethodOptions methodOptions, String path, List<NameValuePair> params, HttpRequestBase method, boolean parseAsJson, Type responseType) throws Exception {
         if (params == null) {
             params = new ArrayList<NameValuePair>();
         }
 
-        if (paginationOptions != null) {
-            if (paginationOptions.getLimit() != null) {
-                params.add(new BasicNameValuePair("limit", paginationOptions.getLimit().toString()));
+        if (methodOptions != null) {
+            if (methodOptions.getLimit() != null) {
+                params.add(new BasicNameValuePair("limit", methodOptions.getLimit().toString()));
             }
 
-            if (paginationOptions.getMarker() != null) {
-                params.add(new BasicNameValuePair("marker", paginationOptions.getMarker()));
+            if (methodOptions.getMarker() != null) {
+                params.add(new BasicNameValuePair("marker", methodOptions.getMarker()));
             }
         }
 

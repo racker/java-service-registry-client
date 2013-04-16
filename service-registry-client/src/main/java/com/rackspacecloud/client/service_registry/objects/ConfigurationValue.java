@@ -17,7 +17,7 @@
 
 package com.rackspacecloud.client.service_registry.objects;
 
-public class ConfigurationValue {
+public class ConfigurationValue implements HasId {
     private String id;
     private String value;
 
