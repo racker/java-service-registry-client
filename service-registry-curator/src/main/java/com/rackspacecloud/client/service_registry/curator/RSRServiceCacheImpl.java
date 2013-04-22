@@ -7,7 +7,7 @@ import com.netflix.curator.framework.listen.ListenerContainer;
 import com.netflix.curator.x.discovery.ServiceCache;
 import com.netflix.curator.x.discovery.ServiceInstance;
 import com.netflix.curator.x.discovery.details.ServiceCacheListener;
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
 import com.rackspacecloud.client.service_registry.objects.Event;
 import com.rackspacecloud.client.service_registry.objects.EventType;
 import com.rackspacecloud.client.service_registry.objects.ServicePayload;
@@ -148,8 +148,9 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
     }
     
     // pull a page of events, process that page, pull the next page, etc.
+    // todo: switch to iterator.
     private void pollAndProcessEvents() {
-        PaginationOptions options = new PaginationOptions(100, null);
+        MethodOptions options = new MethodOptions(100, null);
         List<Event> events = null;
         int count = 0;
         do {
@@ -157,7 +158,7 @@ public class RSRServiceCacheImpl<T> implements ServiceCache<T> {
             count += 1;
             try {
                 // get events from server, filter the ones we are interested in.
-                events = discovery.getClient().getEventsClient().list(options);
+                events = Lists.newArrayList(discovery.getClient().getEventsClient().list(options));
                 String lastEventId = processEvents(events);
                 options = options.withMarker(lastEventId);
             } catch (Exception ex) {

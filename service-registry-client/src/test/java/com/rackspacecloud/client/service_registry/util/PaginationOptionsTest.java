@@ -1,6 +1,6 @@
 package com.rackspacecloud.client.service_registry.util;
 
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -10,9 +10,9 @@ public class PaginationOptionsTest {
         int actualLimit;
         String actualMarker;
 
-        PaginationOptions po1 = new PaginationOptions().withLimit(55)
+        MethodOptions po1 = new MethodOptions().withLimit(55)
                                       .withMarker("markera");
-        PaginationOptions po2 = new PaginationOptions(100, "markerb");
+        MethodOptions po2 = new MethodOptions(100, "markerb");
 
         actualLimit = po1.getLimit();
         actualMarker = po1.getMarker();

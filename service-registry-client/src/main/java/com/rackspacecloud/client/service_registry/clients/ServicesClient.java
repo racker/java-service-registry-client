@@ -20,20 +20,19 @@ package com.rackspacecloud.client.service_registry.clients;
 import com.google.gson.reflect.TypeToken;
 import com.rackspacecloud.client.service_registry.ClientResponse;
 import com.rackspacecloud.client.service_registry.HeartBeater;
-import com.rackspacecloud.client.service_registry.PaginationOptions;
+import com.rackspacecloud.client.service_registry.MethodOptions;
 import com.rackspacecloud.client.service_registry.ServiceCreateResponse;
 import com.rackspacecloud.client.service_registry.containers.ServicesContainer;
 import com.rackspacecloud.client.service_registry.objects.HeartbeatToken;
 import com.rackspacecloud.client.service_registry.objects.Service;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,22 +44,17 @@ public class ServicesClient extends BaseClient {
         this.authClient = authClient;
     }
 
-    public List<Service> list(PaginationOptions paginationOptions) throws Exception {
-        return list(paginationOptions, null);
+    public Iterator<Service> list(MethodOptions methodOptions) throws Exception {
+        return list(methodOptions, null);
     }
 
-    public List<Service> list(PaginationOptions paginationOptions, String tag) throws Exception {
+    public Iterator<Service> list(MethodOptions methodOptions, String tag) throws Exception {
         Type type = new TypeToken<ServicesContainer>() {}.getType();
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-
         if (tag != null) {
-            params.add(new BasicNameValuePair("tag", tag));
+            methodOptions = methodOptions.withOption("tag", tag);
         }
-
-        ClientResponse response = this.performListRequest(paginationOptions, "/services", params, new HttpGet(), true, type);
-
-        ServicesContainer container = (ServicesContainer)response.getBody();
-        return container.getValues();
+        
+        return this.getListIterator(Service.class, "/services", methodOptions, new HttpGet(), true, type);
     }
 
     public Service get(String id) throws Exception {

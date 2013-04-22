@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Service {
+public class Service implements HasId {
     public static final Type TYPE = new TypeToken<Service>() {}.getType();
     private String id;
 

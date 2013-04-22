@@ -23,7 +23,8 @@ import java.lang.reflect.Type;
 
 public class Event implements
         InstanceCreator<Event>,
-        JsonDeserializer<Event> {
+        JsonDeserializer<Event>,
+        HasId {
     private String id;
     private Long timestamp;
     private EventType type;

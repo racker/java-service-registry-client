@@ -21,7 +21,7 @@ import com.rackspacecloud.client.service_registry.objects.ConfigurationValue;
 
 import java.util.List;
 
-public abstract class ConfigurationValuesContainer extends Container {
+public abstract class ConfigurationValuesContainer extends Container implements ContainerMeta<ConfigurationValue> {
     private List<ConfigurationValue> values;
 
     public List<ConfigurationValue> getValues() {

@@ -19,10 +19,30 @@ package com.rackspacecloud.client.service_registry.containers;
 
 import java.util.Map;
 
-public class Container {
+public abstract class Container {
     private Map<String, Object> metadata;
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
+    public Integer getCount() {
+        return Integer.parseInt(this.metadata.get("count").toString());
+    }
+
+    public Integer getLimit() {
+        return Integer.parseInt(this.metadata.get("limit").toString());
+    }
+
+    public String getMarker() {
+        return stringOrNull(this.metadata.get("marker"));
+    }
+
+    public String getNextMarker() {
+        return stringOrNull(this.metadata.get("next_marker"));
+    }
+
+    private Map<String, Object> getMetadata() {
+        return this.metadata;
+    }
+    
+    private static String stringOrNull(Object o) {
+        return o == null ? null : o.toString();
     }
 }
