@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.rackspacecloud</groupId>
         <artifactId>service-registry-parent</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1-SNAPSHOT</version>
     </parent>
 
     <name>Service Registry Client Archaius Bindings</name>
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>com.rackspacecloud</groupId>
             <artifactId>service-registry-client</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
