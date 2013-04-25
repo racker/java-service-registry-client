@@ -28,12 +28,12 @@
         <dependency>
             <groupId>com.rackspacecloud</groupId>
             <artifactId>service-registry-client</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
+            <version>2.1.0-SNAPSHOT</version>
         </dependency>
       <dependency>
           <groupId>com.rackspacecloud</groupId>
           <artifactId>service-registry-curator</artifactId>
-          <version>2.1.1-SNAPSHOT</version>
+          <version>2.1.0-SNAPSHOT</version>
       </dependency>
     </dependencies>
 

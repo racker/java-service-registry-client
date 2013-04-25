@@ -20,7 +20,7 @@ public class ServiceRegistryClientProvider implements ServiceRegistryClient {
     @Override
     public List<Service> getServices(String tag) throws Exception {
         List<Service> services = new ArrayList<Service>();
-        Iterator<Service> it = client.getServicesClient().list(new MethodOptions(100, null), tag); 
+        Iterator<Service> it = client.getServicesClient().list(new MethodOptions(100, null), tag);
         while (it.hasNext()) {
             services.add(it.next());
         }
@@ -29,6 +29,13 @@ public class ServiceRegistryClientProvider implements ServiceRegistryClient {
 
     @Override
     public List<ConfigurationValue> getConfiguration() throws Exception {
-        return Lists.newArrayList(client.getConfigurationClient().list(null));
+        List<ConfigurationValue> configurationValues = new ArrayList<ConfigurationValue>();
+        Iterator<ConfigurationValue> it = client.getConfigurationClient().list(null);
+
+        while (it.hasNext()) {
+            configurationValues.add(it.next());
+        }
+
+        return configurationValues;
     }
 }
